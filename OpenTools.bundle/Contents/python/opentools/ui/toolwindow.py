@@ -4,9 +4,9 @@
 
 from PySide6 import QtCore, QtGui, QtWidgets
 
-from .. import app as app_mod, log, maxhost, paths
+from .. import app as app_mod
+from .. import log, maxhost, paths
 from . import common, theme
-
 
 settings = app_mod.current_settings
 

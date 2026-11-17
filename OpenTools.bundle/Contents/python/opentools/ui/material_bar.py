@@ -32,7 +32,8 @@ from pathlib import Path
 
 from PySide6 import QtCore, QtGui, QtWidgets
 
-from .. import app as app_mod, log, materials
+from .. import app as app_mod
+from .. import log, materials
 from . import common, theme
 from .toolwindow import guarded
 

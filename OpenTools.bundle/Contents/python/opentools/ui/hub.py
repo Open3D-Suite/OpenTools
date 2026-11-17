@@ -13,7 +13,8 @@ from PySide6 import QtCore, QtGui, QtWidgets
 
 import opentools
 
-from .. import __version__, app as app_mod, log, look, maxhost, paths, search
+from .. import __version__, log, look, maxhost, paths, search
+from .. import app as app_mod
 from . import common, theme
 from .flow import FlowLayout
 

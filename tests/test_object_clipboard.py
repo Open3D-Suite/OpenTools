@@ -5,7 +5,8 @@ from pathlib import Path
 
 import helpers  # noqa: F401 - quiets logging
 
-from opentools import clipboard_hud, object_clipboard as oc
+from opentools import clipboard_hud
+from opentools import object_clipboard as oc
 
 
 class FakeSettings:

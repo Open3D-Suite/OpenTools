@@ -9,7 +9,8 @@ on the active row. Python refreshes the slot data every few seconds and asks for
 redraw only when it or the held keys change.
 """
 
-from . import log, object_clipboard as oc
+from . import log
+from . import object_clipboard as oc
 
 _log = log.get("clipboard_hud")
 

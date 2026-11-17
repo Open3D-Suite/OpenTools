@@ -671,7 +671,8 @@ def send_to(slot, target_root, target_slot=None, mode=None, route=None):
 # ------------------------------------------------------------- materials
 def copy_materials(slot=1, route=None):
     rt = _rt()
-    from . import materials as mat_mod, maxhost
+    from . import materials as mat_mod
+    from . import maxhost
 
     settings = _settings()
     directory = slot_dir(slot, settings, mode="materials", route=route)

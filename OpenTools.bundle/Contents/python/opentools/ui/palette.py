@@ -8,9 +8,9 @@ from PySide6 import QtCore, QtWidgets
 
 import opentools
 
-from .. import app as app_mod, maxhost, search
+from .. import app as app_mod
+from .. import maxhost, search
 from . import common, theme
-
 
 _palette = None
 

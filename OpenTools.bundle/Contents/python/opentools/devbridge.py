@@ -99,8 +99,9 @@ class Bridge:
 
         stdout, stderr = io.StringIO(), io.StringIO()
         result = {"id": job_id, "ok": True, "error": None, "result": None}
-        import opentools
         import pymxs
+
+        import opentools
 
         namespace = {
             "__name__": "__opentools_bridge__",

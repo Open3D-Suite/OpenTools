@@ -11,7 +11,8 @@ from PySide6 import QtCore, QtWidgets
 
 from opentools.ui import tables, theme, toolwindow
 
-from . import elements_max, elements_model as model
+from . import elements_max
+from . import elements_model as model
 
 SAME_FORMAT = ""  # the format of the scene's render output
 

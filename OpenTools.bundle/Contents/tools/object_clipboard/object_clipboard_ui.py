@@ -11,7 +11,9 @@ import html
 
 from PySide6 import QtCore, QtGui, QtWidgets
 
-from opentools import app as app_mod, clipboard_hud, maxhost, object_clipboard as oc
+from opentools import app as app_mod
+from opentools import clipboard_hud, maxhost
+from opentools import object_clipboard as oc
 from opentools.ui import common, theme
 from opentools.ui.flow import FlowLayout
 from opentools.ui.toolwindow import guarded
