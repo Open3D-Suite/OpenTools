@@ -531,7 +531,7 @@ class HubWidget(QtWidgets.QWidget):
         for label, color, members in sections:
             if members is None:
                 bar = self.materials_section
-                count = next((len(m) for l, _c, m in sections if l == MATERIALS_LABEL and m), None)
+                count = next((len(m) for name, _c, m in sections if name == MATERIALS_LABEL and m), None)
                 bar.header.set_title(MATERIALS_LABEL, count)
                 self.content_layout.insertWidget(position, bar)
                 bar.show()
