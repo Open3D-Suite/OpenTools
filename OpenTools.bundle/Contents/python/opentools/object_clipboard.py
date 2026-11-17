@@ -478,7 +478,7 @@ def _collect_textures(directory):
     sources = [a.resolved or a.path for a in usable]
     steps = assets.plan_collect(sources, maps)
     mapping = {}
-    for asset, step in zip(usable, steps):
+    for asset, step in zip(usable, steps, strict=False):
         if step.action == "copy":
             shutil.copy2(step.source, step.target)
         if step.action in ("copy", "reuse"):
@@ -559,7 +559,7 @@ def _pull_textures(directory):
     destination.mkdir(parents=True, exist_ok=True)
     steps = assets.plan_collect([a.resolved or a.path for a in used], destination)
     mapping = {}
-    for asset, step in zip(used, steps):
+    for asset, step in zip(used, steps, strict=False):
         if step.action == "copy":
             shutil.copy2(step.source, step.target)
         if step.action in ("copy", "reuse"):

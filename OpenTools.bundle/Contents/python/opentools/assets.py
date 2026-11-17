@@ -491,7 +491,7 @@ def collect(
         elif step.action == "reuse":
             reused += 1
     mapping = {}
-    for asset, step in zip(usable, steps[: len(usable)]):
+    for asset, step in zip(usable, steps[: len(usable)], strict=False):
         if step.action in ("copy", "reuse") and norm(asset.path) != norm(step.target):
             mapping[asset.path] = step.target
     report = {
