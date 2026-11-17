@@ -88,7 +88,7 @@ def file_hash(path):
     stat = os.stat(path)
     key = (norm(path), stat.st_size, stat.st_mtime)
     if key not in _hash_cache:
-        digest = hashlib.sha1()
+        digest = hashlib.sha1(usedforsecurity=False)  # only tells identical files apart
         with open(path, "rb") as handle:
             for chunk in iter(lambda: handle.read(1 << 20), b""):
                 digest.update(chunk)
