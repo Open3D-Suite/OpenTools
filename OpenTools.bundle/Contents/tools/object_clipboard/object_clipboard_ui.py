@@ -510,7 +510,8 @@ class ClipboardWindow(QtWidgets.QDialog):
             card.refresh(force=force)
         save_as, materials = cfg.save_as, cfg.materials
         self.footer.setText(
-            "Folder: %s · saved for %s · same-name materials: %s · hold Shift / Ctrl / Alt on Copy/Paste to pick slots 2-8"
+            "Folder: %s · saved for %s · same-name materials: %s · "
+            "hold Shift / Ctrl / Alt on Copy/Paste to pick slots 2-8"
             % (
                 oc.slot_dir(1, _settings()).parent,
                 save_as or "this 3ds Max",
