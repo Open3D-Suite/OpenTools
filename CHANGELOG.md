@@ -2,6 +2,11 @@
 
 What each version of OpenTools (formerly Open3DS) adds, newest first.
 
+## In development
+
+- **Auditor:** the malicious-script warning shows the name of the signature in quotes instead of garbled
+  characters.
+
 ## 0.6.0 — 12 November 2026
 
 - **New tool: Render Elements** (category Rendering). Renders only the render elements you tick, without
