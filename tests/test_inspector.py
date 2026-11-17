@@ -117,6 +117,9 @@ class CheckTableTests(unittest.TestCase):
 class MalwareTests(unittest.TestCase):
     def test_signatures(self):
         self.assertIn("alc_beta", inspector.suspicious("ALC_beta"))
+        # the name goes in curly quotes, written as escapes so a wrong encoding cannot garble both sides alike
+        self.assertEqual(inspector.suspicious("ALC_beta"), "known malware signature "
+                         "\N{LEFT DOUBLE QUOTATION MARK}alc_beta\N{RIGHT DOUBLE QUOTATION MARK}")
         self.assertTrue(inspector.suspicious("Startup file", "global vrdematcleanbeta = 1"))
         self.assertTrue(inspector.suspicious("x", "fn CRP_BScript = ()"))
         self.assertEqual(inspector.suspicious("MyRigAttributes", "parameters main (x type:#float)"), "")

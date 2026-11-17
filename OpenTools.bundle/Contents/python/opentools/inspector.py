@@ -258,7 +258,7 @@ def suspicious(name, text=""):
     haystack = ("%s\n%s" % (name or "", text or "")).lower()
     for signature in SIGNATURES:
         if signature in haystack:
-            return "known malware signature â€œ%sâ€" % signature
+            return "known malware signature “%s”" % signature
     if text and _STARTUP_RE.search(text) and _SPREAD_RE.search(text):
         return "writes scripts into the startup folder"
     return ""
