@@ -22,13 +22,7 @@ CORE_MACROS = (
 
 def ms_string(text):
     """Quote a Python string as a MAXScript string literal."""
-    escaped = (
-        text.replace("\\", "\\\\")
-        .replace('"', '\\"')
-        .replace("\r", "")
-        .replace("\n", "\\n")
-        .replace("\t", "\\t")
-    )
+    escaped = text.replace("\\", "\\\\").replace('"', '\\"').replace("\r", "").replace("\n", "\\n").replace("\t", "\\t")
     return '"' + escaped + '"'
 
 

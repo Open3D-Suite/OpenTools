@@ -134,9 +134,7 @@ class SectionHeader(QtWidgets.QFrame):
         super().__init__(parent)
         self.setObjectName("OTL_SectionHeader")
         self.setAttribute(QtCore.Qt.WA_StyledBackground, True)
-        self.setStyleSheet(
-            "QFrame#OTL_SectionHeader { border: none; border-left: 3px solid %s; }" % (color or "gray")
-        )
+        self.setStyleSheet("QFrame#OTL_SectionHeader { border: none; border-left: 3px solid %s; }" % (color or "gray"))
         self.collapsible = collapsible
         self.arrow = QtWidgets.QLabel()
         self.arrow.setFixedWidth(12)
@@ -158,8 +156,7 @@ class SectionHeader(QtWidgets.QFrame):
     def set_title(self, label, count=None):
         text = label.replace("<", "&lt;")
         if count is not None:
-            text += "&nbsp;&nbsp;<span style='color:%s; font-weight:normal'>(%d)</span>" % (
-                theme.tokens().dim, count)
+            text += "&nbsp;&nbsp;<span style='color:%s; font-weight:normal'>(%d)</span>" % (theme.tokens().dim, count)
         self.title.setText(text)
 
     def set_expanded(self, expanded):
@@ -176,8 +173,7 @@ class Section(QtWidgets.QWidget):
 
     toggled = QtCore.Signal(str, bool)
 
-    def __init__(self, label, color, count=None, expanded=True, collapsible=True, grid=True,
-                 parent=None):
+    def __init__(self, label, color, count=None, expanded=True, collapsible=True, grid=True, parent=None):
         super().__init__(parent)
         self.label = label
         self.expanded = expanded
@@ -342,8 +338,9 @@ class HubWidget(QtWidgets.QWidget):
             return
         settings = _settings()
         collapsed = set(settings.get("hub_collapsed")) if settings else set()
-        section = Section(MATERIALS_LABEL, look.category_color("materials"),
-                          expanded=MATERIALS_LABEL not in collapsed, grid=False)
+        section = Section(
+            MATERIALS_LABEL, look.category_color("materials"), expanded=MATERIALS_LABEL not in collapsed, grid=False
+        )
         section.add(self.material_bar)
         section.toggled.connect(self._remember_collapsed)
         section.toggled.connect(self._fold_materials_tools)
@@ -429,8 +426,7 @@ class HubWidget(QtWidgets.QWidget):
             ("Move to the start", lambda: self._move_category(chip.value, order[0]), index > 0),
             ("Move left", lambda: self._shift_category(chip.value, -1), index > 0),
             ("Move right", lambda: self._shift_category(chip.value, 1), index < len(order) - 1),
-            ("Move to the end", lambda: self._move_category(chip.value, order[-1], True),
-             index < len(order) - 1),
+            ("Move to the end", lambda: self._move_category(chip.value, order[-1], True), index < len(order) - 1),
         )
         for text, slot, enabled in actions:
             menu.addAction(text, slot).setEnabled(enabled)
@@ -476,9 +472,7 @@ class HubWidget(QtWidgets.QWidget):
         registry = current.registry
         tools = registry.all()
         categories = registry.categories()
-        favorites = sorted(
-            (t for t in tools if settings.is_favorite(t.id)), key=lambda t: t.name.lower()
-        )
+        favorites = sorted((t for t in tools if settings.is_favorite(t.id)), key=lambda t: t.name.lower())
         groups = self._groups(categories, settings.get("hub_category_order"))
         self._shown_groups = groups
         valid = set(groups) | ({FAVORITES_FILTER} if favorites else set())
@@ -493,10 +487,19 @@ class HubWidget(QtWidgets.QWidget):
             self._add_chip("★", FAVORITES_FILTER, FAVORITES_FILTER in chosen, tooltip="Favorites")
         for group in groups:
             count = sum(1 for t in tools if t.category == group)
-            tip = "Material bar" if group == MATERIALS_LABEL and not count else (
-                "%s · %d tool%s" % (group, count, "" if count == 1 else "s"))
-            self._add_chip(group, group, group in chosen, look.category_color(group),
-                           tip + ". Click to show or hide it; drag it to reorder.", movable=True)
+            tip = (
+                "Material bar"
+                if group == MATERIALS_LABEL and not count
+                else ("%s · %d tool%s" % (group, count, "" if count == 1 else "s"))
+            )
+            self._add_chip(
+                group,
+                group,
+                group in chosen,
+                look.category_color(group),
+                tip + ". Click to show or hide it; drag it to reorder.",
+                movable=True,
+            )
         self.chips.setEnabled(not query)
 
         # (label, color, tools or None for the Materials section)
@@ -554,9 +557,7 @@ class HubWidget(QtWidgets.QWidget):
             for tool in members:
                 button = ToolButton(tool, icon_px, show_labels)
                 button.clicked.connect(lambda _=False, tid=tool.id: opentools.run(tid))
-                button.customContextMenuRequested.connect(
-                    lambda pos, b=button: self._context_menu(b, pos)
-                )
+                button.customContextMenuRequested.connect(lambda pos, b=button: self._context_menu(b, pos))
                 section.add(button)
             self.content_layout.insertWidget(position, section)
             position += 1
@@ -575,9 +576,7 @@ class HubWidget(QtWidgets.QWidget):
             text = "%d tools" % len(tools)
         if registry.errors:
             text += " · %d failed to load" % len(registry.errors)
-            self.status.setToolTip(
-                "\n".join("%s: %s" % (path.name, message) for path, message in registry.errors)
-            )
+            self.status.setToolTip("\n".join("%s: %s" % (path.name, message) for path, message in registry.errors))
         else:
             self.status.setToolTip("")
         self.status.setText(text)

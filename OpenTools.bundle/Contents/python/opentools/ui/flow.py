@@ -99,8 +99,11 @@ class FlowLayout(QtWidgets.QLayout):
         for index, item in enumerate(items):
             row, column = divmod(index, columns)
             if apply:
-                item.setGeometry(QtCore.QRect(area.x() + column * (width + spacing),
-                                              area.y() + row * (height + spacing), width, height))
+                item.setGeometry(
+                    QtCore.QRect(
+                        area.x() + column * (width + spacing), area.y() + row * (height + spacing), width, height
+                    )
+                )
         rows = (len(items) + columns - 1) // columns
         margins = self.contentsMargins()
         return area.y() - rect.y() + rows * height + (rows - 1) * spacing + margins.bottom()

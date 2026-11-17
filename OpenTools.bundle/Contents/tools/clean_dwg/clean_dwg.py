@@ -30,24 +30,31 @@ class CleanDWGWindow(toolwindow.ToolWindow):
         super().__init__(parent)
         self.name_edit = QtWidgets.QLineEdit()
         self.name_edit.setPlaceholderText("New layer and group name")
-        self.name_edit.setToolTip("The selection moves to this layer (created if needed)\n"
-                                  "and, with Group, is grouped under the same name.")
+        self.name_edit.setToolTip(
+            "The selection moves to this layer (created if needed)\nand, with Group, is grouped under the same name."
+        )
         self.name_edit.textChanged.connect(self._update_button)
         self.name_edit.returnPressed.connect(self.guard(self.start))
 
         options = QtWidgets.QGroupBox("Options")
         box = QtWidgets.QVBoxLayout(options)
-        box.addWidget(self.check(
-            "flatten", "Flatten",
-            "Flattens every shape onto Z = 0 (rotation and scale reset, same object)\n"
-            "and DELETES every other selected object: meshes, blocks, dummies...",
-        ))
+        box.addWidget(
+            self.check(
+                "flatten",
+                "Flatten",
+                "Flattens every shape onto Z = 0 (rotation and scale reset, same object)\n"
+                "and DELETES every other selected object: meshes, blocks, dummies...",
+            )
+        )
         box.addWidget(self.check("group", "Group", "Groups the result under the new name."))
-        box.addWidget(self.check(
-            "clean_layers", "Clean emptied layers",
-            "Afterwards deletes the layers the cleaned objects came from, once they are empty.\n"
-            "Other empty layers (a template's layer structure, for example) are left alone.",
-        ))
+        box.addWidget(
+            self.check(
+                "clean_layers",
+                "Clean emptied layers",
+                "Afterwards deletes the layers the cleaned objects came from, once they are empty.\n"
+                "Other empty layers (a template's layer structure, for example) are left alone.",
+            )
+        )
 
         self.button = QtWidgets.QPushButton("Start")
         self.button.setMinimumHeight(30)
@@ -83,7 +90,8 @@ class CleanDWGWindow(toolwindow.ToolWindow):
         # their source layers were deleted outside one crashes 3ds Max 2027 (verified).
         with maxhost.undo("Clean DWG"):
             flattened, deleted, moved, head, sources = core.run(
-                rt.Array(*nodes), name, bool(o["flatten"]), bool(o["group"]))
+                rt.Array(*nodes), name, bool(o["flatten"]), bool(o["group"])
+            )
             layers = int(core.deleteLayersIfEmpty(sources)) if o["clean_layers"] else 0
 
         parts = []

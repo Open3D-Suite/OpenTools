@@ -94,11 +94,15 @@ class LoadManifestTests(unittest.TestCase):
             load_manifest(folder)
 
     def test_missing_icon_is_only_a_warning(self):
-        folder = make_tool(self.root, "a", {"id": "ab", "name": "AB", "entry": "t.ms", "icon": "nope.png"}, {"t.ms": ""})
+        folder = make_tool(
+            self.root, "a", {"id": "ab", "name": "AB", "entry": "t.ms", "icon": "nope.png"}, {"t.ms": ""}
+        )
         self.assertIsNone(load_manifest(folder).icon)
 
     def test_icon_file_is_picked_up_without_manifest_entry(self):
-        folder = make_tool(self.root, "b", {"id": "bc", "name": "BC", "entry": "t.ms"}, {"t.ms": "", "icon.svg": "<svg/>"})
+        folder = make_tool(
+            self.root, "b", {"id": "bc", "name": "BC", "entry": "t.ms"}, {"t.ms": "", "icon.svg": "<svg/>"}
+        )
         self.assertEqual(load_manifest(folder).icon, folder / "icon.svg")
 
 
@@ -111,12 +115,18 @@ class RegistryTests(unittest.TestCase):
         self._tmp.cleanup()
 
     def test_scan_collects_tools_errors_and_skips(self):
-        make_tool(self.root / "one", "good", {"id": "good", "name": "Good", "entry": "t.ms", "category": "B"}, {"t.ms": ""})
+        make_tool(
+            self.root / "one", "good", {"id": "good", "name": "Good", "entry": "t.ms", "category": "B"}, {"t.ms": ""}
+        )
         make_tool(self.root / "one", "broken", {"id": "BAD", "name": "x", "entry": "t.ms"}, {"t.ms": ""})
-        make_tool(self.root / "one", "old", {"id": "old", "name": "Old", "entry": "t.ms", "max_max": 2024}, {"t.ms": ""})
+        make_tool(
+            self.root / "one", "old", {"id": "old", "name": "Old", "entry": "t.ms", "max_max": 2024}, {"t.ms": ""}
+        )
         (self.root / "one" / "not_a_tool").mkdir()
         make_tool(self.root / "two", "dupe", {"id": "good", "name": "Dupe", "entry": "t.ms"}, {"t.ms": ""})
-        make_tool(self.root / "two", "other", {"id": "other", "name": "Other", "entry": "t.ms", "category": "A"}, {"t.ms": ""})
+        make_tool(
+            self.root / "two", "other", {"id": "other", "name": "Other", "entry": "t.ms", "category": "A"}, {"t.ms": ""}
+        )
 
         registry = Registry([self.root / "one", self.root / "two", self.root / "missing"]).scan(max_year=2027)
 

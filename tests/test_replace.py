@@ -12,7 +12,7 @@ class ReplaceTests(unittest.TestCase):
         self.assertEqual(replace.clean_weight(40), 40)
         self.assertEqual(replace.clean_weight("12.6"), 13)
         self.assertEqual(replace.clean_weight(-5), 0)
-        self.assertEqual(replace.clean_weight(10 ** 9), replace.MAX_WEIGHT)
+        self.assertEqual(replace.clean_weight(10**9), replace.MAX_WEIGHT)
         self.assertEqual(replace.clean_weight(None), replace.DEFAULT_WEIGHT)
         self.assertEqual(replace.clean_weight(True), replace.DEFAULT_WEIGHT)
 

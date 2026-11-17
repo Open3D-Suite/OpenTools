@@ -28,8 +28,14 @@ class ObjectClipboardTests(unittest.TestCase):
 
     def test_slots_by_modifier_keys(self):
         combos = {
-            (False, False, False): 1, (True, False, False): 2, (False, True, False): 3, (False, False, True): 4,
-            (True, True, False): 5, (True, False, True): 6, (False, True, True): 7, (True, True, True): 8,
+            (False, False, False): 1,
+            (True, False, False): 2,
+            (False, True, False): 3,
+            (False, False, True): 4,
+            (True, True, False): 5,
+            (True, False, True): 6,
+            (False, True, True): 7,
+            (True, True, True): 8,
         }
         for keys, slot in combos.items():
             self.assertEqual(oc.slot_for(*keys), slot, keys)
@@ -55,7 +61,9 @@ class ObjectClipboardTests(unittest.TestCase):
 
     def test_config_validation(self):
         cfg = oc.config(FakeSettings(save_as=-3, materials="weird", mode="nope", paste="fly", align=1))
-        self.assertEqual((cfg.save_as, cfg.materials, cfg.mode, cfg.paste, cfg.align), (0, "rename", "objects", "in_place", True))
+        self.assertEqual(
+            (cfg.save_as, cfg.materials, cfg.mode, cfg.paste, cfg.align), (0, "rename", "objects", "in_place", True)
+        )
         self.assertEqual(oc.options(FakeSettings(save_as=2025, materials="scene")), (2025, "scene"))
         self.assertEqual(oc.options(FakeSettings(save_as=True)), (0, "rename"))
         self.assertEqual(oc.options(None), (0, "rename"))
@@ -150,10 +158,13 @@ class ObjectClipboardTests(unittest.TestCase):
         self.assertEqual(oc.mode_word("animation", 1), "1 key")
         self.assertEqual(oc.mode_word("modifiers", 3), "3 modifiers")
         self.assertEqual(oc.mode_word("weird", 2), "2 objects")
-        cfg = oc.config(FakeSettings(mode="animation", mod_instance=False, keys_relative=0, keys_frame="12",
-                                     keys_offset=True))
-        self.assertEqual((cfg.mode, cfg.mod_instance, cfg.keys_relative, cfg.keys_frame, cfg.keys_offset),
-                         ("animation", False, False, 12, 0))
+        cfg = oc.config(
+            FakeSettings(mode="animation", mod_instance=False, keys_relative=0, keys_frame="12", keys_offset=True)
+        )
+        self.assertEqual(
+            (cfg.mode, cfg.mod_instance, cfg.keys_relative, cfg.keys_frame, cfg.keys_offset),
+            ("animation", False, False, 12, 0),
+        )
         defaults = oc.config(None)
         self.assertEqual((defaults.mod_instance, defaults.keys_relative, defaults.keys_frame), (True, True, 0))
 

@@ -96,8 +96,7 @@ def _register_shutdown_callback():
     code = macros.ms_string("import opentools.bootstrap; opentools.bootstrap.shutdown()")
     maxhost.execute_maxscript(
         "callbacks.removeScripts id:#OpenTools\n"
-        "callbacks.addScript #preSystemShutdown (\"python.Execute \" + %s) id:#OpenTools\n"
-        % macros.ms_string(code)
+        'callbacks.addScript #preSystemShutdown ("python.Execute " + %s) id:#OpenTools\n' % macros.ms_string(code)
     )
 
 

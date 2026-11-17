@@ -55,10 +55,12 @@ class AuditorWindow(toolwindow.ToolWindow):
         header = cards.Header("AUDITOR", "Scene check and cleanup · OpenTools %s" % opentools.__version__)
         layout.addWidget(header)
 
-        self.scan_button = cards.button("Scan", self.guard(self.scan), accent=True,
-                                        tooltip="Run every check and refresh all the cards")
-        rescan_mods = cards.button("Rescan modifiers", self.guard(self.rescan_modifiers),
-                                   tooltip="Refresh only the Modifiers tab")
+        self.scan_button = cards.button(
+            "Scan", self.guard(self.scan), accent=True, tooltip="Run every check and refresh all the cards"
+        )
+        rescan_mods = cards.button(
+            "Rescan modifiers", self.guard(self.rescan_modifiers), tooltip="Refresh only the Modifiers tab"
+        )
         self.renderer = cards.dim("Renderer: —")
         self.scan_pill = cards.Pill("Not scanned")
         self.malware_pill = cards.Pill("Malware not checked")
@@ -130,13 +132,21 @@ class AuditorWindow(toolwindow.ToolWindow):
         buttons = []
         select = None
         if check.selectable:
-            select = cards.button("Select", self.guard(lambda c=check.id: self.select_found(c)), mini=True,
-                                  tooltip="Select the objects found")
+            select = cards.button(
+                "Select",
+                self.guard(lambda c=check.id: self.select_found(c)),
+                mini=True,
+                tooltip="Select the objects found",
+            )
             buttons.append(select)
         fix = None
         if check.fix:
-            fix = cards.button(check.fix, self.guard(lambda c=check.id: self.fix(c)), mini=True,
-                               tooltip=check.confirm or check.description)
+            fix = cards.button(
+                check.fix,
+                self.guard(lambda c=check.id: self.fix(c)),
+                mini=True,
+                tooltip=check.confirm or check.description,
+            )
             buttons.append(fix)
         row = card.add_row(check.title, "—", buttons)
         row.select_button, row.fix_button = select, fix
@@ -180,8 +190,10 @@ class AuditorWindow(toolwindow.ToolWindow):
             self.malware_pill.set("Malicious scripts found", cards.BAD)
         else:
             self.malware_pill.set("No malicious scripts", cards.GOOD)
-        self.problem_pill.set("No problems" if problems == 0 else "%s to review" % inspector.plural(problems, "check"),
-                              cards.GOOD if problems == 0 else cards.WARN)
+        self.problem_pill.set(
+            "No problems" if problems == 0 else "%s to review" % inspector.plural(problems, "check"),
+            cards.GOOD if problems == 0 else cards.WARN,
+        )
 
     @staticmethod
     def _tooltip(check, result):
@@ -328,10 +340,13 @@ class AuditorWindow(toolwindow.ToolWindow):
             _prompt("highlight one or more modifiers in the list first.")
             return
         names = ", ".join(c.lstrip("_") for c in classes)
-        if action == "delete" and not self.confirm("Remove modifiers", "Remove every %s modifier from the scene?" % names):
+        if action == "delete" and not self.confirm(
+            "Remove modifiers", "Remove every %s modifier from the scene?" % names
+        ):
             return
         if action == "collapse" and not self.confirm(
-                "Collapse stacks", "Collapse the whole stack of every object that has %s?" % names):
+            "Collapse stacks", "Collapse the whole stack of every object that has %s?" % names
+        ):
             return
         if action == "select":
             users = []
@@ -353,9 +368,11 @@ class AuditorWindow(toolwindow.ToolWindow):
             _prompt("select the objects first.")
             return
         if action in ("delete", "collapse") and not self.confirm(
-                "Selected objects",
-                "Remove every modifier of the selected objects?" if action == "delete"
-                else "Collapse the stack of the selected objects?"):
+            "Selected objects",
+            "Remove every modifier of the selected objects?"
+            if action == "delete"
+            else "Collapse the stack of the selected objects?",
+        ):
             return
         changed = im.selection_action(action)
         past = {"enable": "Turned on", "disable": "Turned off", "delete": "Removed", "collapse": "Collapsed"}[action]
@@ -440,17 +457,23 @@ class AuditorWindow(toolwindow.ToolWindow):
         system = units["system"] if scale == "1" else "1 unit = %s %s" % (scale, units["system"])
         start, end, fps = info["frames"]
         t = inspector.thousands
-        self._fill(self.scene_card, [
-            ("Render engine", info["renderer"] or "—"),
-            ("Units", "System: %s · Display: %s" % (
-                system, units["metric"] if units["display"] == "metric" else units["display"])),
-            ("Color management", info.get("color") or "—"),
-            ("Animation", "Frames %d to %d at %d fps" % (start, end, fps)),
-            ("Objects", "%s  (%s hidden, %s frozen)" % (t(info["objects"]), t(info["hidden"]), t(info["frozen"]))),
-            ("Unique meshes", t(info["unique_meshes"])),
-            ("Layers", t(info["layers"])),
-            ("Materials / bitmaps", "%s / %s" % (t(info["materials"]), t(info["bitmaps"]))),
-        ])
+        self._fill(
+            self.scene_card,
+            [
+                ("Render engine", info["renderer"] or "—"),
+                (
+                    "Units",
+                    "System: %s · Display: %s"
+                    % (system, units["metric"] if units["display"] == "metric" else units["display"]),
+                ),
+                ("Color management", info.get("color") or "—"),
+                ("Animation", "Frames %d to %d at %d fps" % (start, end, fps)),
+                ("Objects", "%s  (%s hidden, %s frozen)" % (t(info["objects"]), t(info["hidden"]), t(info["frozen"]))),
+                ("Unique meshes", t(info["unique_meshes"])),
+                ("Layers", t(info["layers"])),
+                ("Materials / bitmaps", "%s / %s" % (t(info["materials"]), t(info["bitmaps"]))),
+            ],
+        )
 
         self.heavy.clear()
         for faces, name, node in info["top"]:

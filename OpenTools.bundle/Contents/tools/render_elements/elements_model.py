@@ -4,6 +4,7 @@ where each file goes, what has to change in the scene for a render and how to pu
 
 No 3ds Max or Qt imports here: this module is tested outside Max (tests/test_render_elements.py).
 """
+
 import json
 import os
 import re
@@ -31,22 +32,40 @@ def engine_of(renderer_class):
 
 # ---------------------------------------------------------------- element kinds
 
-FAST = "fast"        # needs no lighting: rendered in seconds with shading switched off
-LIT = "lit"          # needs the lighting of the scene: costs as much as the full render
+FAST = "fast"  # needs no lighting: rendered in seconds with shading switched off
+LIT = "lit"  # needs the lighting of the scene: costs as much as the full render
 FOREIGN = "foreign"  # belongs to another renderer: the current one does not render it
 
 # Corona: the elements "Render only masks" fills (tested in Corona 14 / 3ds Max 2027, one class at a time).
 _CORONA_FAST = {
-    "cmasking_id", "cmasking_mask", "cmasking_wirecolor", "cmasking_cryptomatte", "ctexmap",
-    "cshading_albedo", "cshading_alpha", "cshading_sourcecolor",
+    "cmasking_id",
+    "cmasking_mask",
+    "cmasking_wirecolor",
+    "cmasking_cryptomatte",
+    "ctexmap",
+    "cshading_albedo",
+    "cshading_alpha",
+    "cshading_sourcecolor",
 }
 _CORONA_FAST_PREFIXES = ("cgeometry_",)
 
 # V-Ray: elements that describe geometry, IDs or textures and stay the same with lights and GI off.
 _VRAY_FAST = {
-    "vraywirecolor", "vrayzdepth", "vrayobjectid", "vrayrenderid", "vraymtlid", "multimatteelement",
-    "vraycryptomatte", "vraynormals", "vraybumpnormals", "vraysamplerinfo", "vrayvelocity", "vrayalpha",
-    "vrayextratex", "vraydiffusefilter", "vrayao",
+    "vraywirecolor",
+    "vrayzdepth",
+    "vrayobjectid",
+    "vrayrenderid",
+    "vraymtlid",
+    "multimatteelement",
+    "vraycryptomatte",
+    "vraynormals",
+    "vraybumpnormals",
+    "vraysamplerinfo",
+    "vrayvelocity",
+    "vrayalpha",
+    "vrayextratex",
+    "vraydiffusefilter",
+    "vrayao",
 }
 
 
@@ -78,8 +97,13 @@ def kind_of(engine, element_class):
 # seen through a refractive material that affects all channels do not change. V-Ray GPU has no such switches.
 FAST_PROPS = {
     CORONA: {"shading_onlyElements": True},
-    VRAY: {"options_lights": False, "options_defaultLights": 0, "options_shadows": False, "gi_on": False,
-           "options_glossyEffects": False},
+    VRAY: {
+        "options_lights": False,
+        "options_defaultLights": 0,
+        "options_shadows": False,
+        "gi_on": False,
+        "options_glossyEffects": False,
+    },
 }
 
 # V-Ray's own file outputs would write the main image again: they are off during an elements render.
@@ -161,6 +185,7 @@ def unique_name(name, taken):
 
 # ---------------------------------------------------------------- the plan of one render
 
+
 def make_plan(engine, elements, chosen, base, ext="", mask_name=""):
     """What one render changes. `elements`: the scene's elements in order, dicts with name and cls. `chosen`: the
     indices to render. `mask_name`: name of the temporary mask of the selection, "" for none.
@@ -228,7 +253,11 @@ def record_from_json(text):
         record = json.loads(text)
     except (TypeError, ValueError):
         return None
-    if not isinstance(record, dict) or record.get("v") != RECORD_VERSION or not isinstance(record.get("elements"), list):
+    if (
+        not isinstance(record, dict)
+        or record.get("v") != RECORD_VERSION
+        or not isinstance(record.get("elements"), list)
+    ):
         return None
     return record
 

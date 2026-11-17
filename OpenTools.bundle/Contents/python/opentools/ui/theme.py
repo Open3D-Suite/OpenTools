@@ -52,8 +52,12 @@ def _glyph(name, color):
     path = folder / ("%s_%s.svg" % (name, color.lstrip("#")))
     if not path.exists():
         folder.mkdir(parents=True, exist_ok=True)
-        path.write_text('<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12">'
-                        + _GLYPHS[name].format(c=color) + "</svg>", encoding="utf-8")
+        path.write_text(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12">'
+            + _GLYPHS[name].format(c=color)
+            + "</svg>",
+            encoding="utf-8",
+        )
     return path.as_posix()
 
 

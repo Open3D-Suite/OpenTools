@@ -55,11 +55,14 @@ MATERIAL_MODES = ("rename", "scene")  # clashing material names on paste
 MODES = ("objects", "materials", "modifiers", "animation")
 # Every mode but objects keeps its slots in a sub-folder of the target.
 MODE_DIRS = {"materials": MATERIALS_DIR, "modifiers": "modifiers", "animation": "animation"}
-MODE_FILES = {"objects": FILE_NAME, "materials": MATERIAL_FILE, "modifiers": MODIFIER_FILE,
-              "animation": ANIMATION_FILE}
+MODE_FILES = {"objects": FILE_NAME, "materials": MATERIAL_FILE, "modifiers": MODIFIER_FILE, "animation": ANIMATION_FILE}
 # (singular, plural) of what a slot of each mode holds
-MODE_WORDS = {"objects": ("object", "objects"), "materials": ("material", "materials"),
-              "modifiers": ("modifier", "modifiers"), "animation": ("key", "keys")}
+MODE_WORDS = {
+    "objects": ("object", "objects"),
+    "materials": ("material", "materials"),
+    "modifiers": ("modifier", "modifiers"),
+    "animation": ("key", "keys"),
+}
 MODE_LABELS = {"objects": "Objects", "materials": "Materials", "modifiers": "Modifiers", "animation": "Keys"}
 ROUTES = ("local", "remote")
 PASTE_MODES = ("in_place", "cursor", "stamp")
@@ -67,14 +70,29 @@ PASTE_LABELS = {"in_place": "In place", "cursor": "On cursor", "stamp": "Stamp"}
 
 # Shift = 1, Ctrl = 2, Alt = 4 -> slot
 _SLOT_BY_BITS = {0: 1, 1: 2, 2: 3, 4: 4, 3: 5, 5: 6, 6: 7, 7: 8}
-MODIFIER_LABELS = {1: "", 2: "Shift", 3: "Ctrl", 4: "Alt", 5: "Shift+Ctrl", 6: "Shift+Alt", 7: "Ctrl+Alt",
-                   8: "Shift+Ctrl+Alt"}
+MODIFIER_LABELS = {
+    1: "",
+    2: "Shift",
+    3: "Ctrl",
+    4: "Alt",
+    5: "Shift+Ctrl",
+    6: "Shift+Alt",
+    7: "Ctrl+Alt",
+    8: "Shift+Ctrl+Alt",
+}
 
 # Viewports where zooming for the thumbnail is safe (never camera/light/shape views:
 # zooming those would move the camera or light itself).
 _ZOOMABLE_VIEWS = {
-    "view_persp_user", "view_iso_user", "view_top", "view_bottom", "view_front",
-    "view_back", "view_left", "view_right", "view_grid",
+    "view_persp_user",
+    "view_iso_user",
+    "view_top",
+    "view_bottom",
+    "view_front",
+    "view_back",
+    "view_left",
+    "view_right",
+    "view_grid",
 }
 _UNDO_VIEWPORT_OPERATION = (0, "40104")
 MS_FILE = Path(__file__).with_name("object_clipboard.ms")
@@ -121,7 +139,6 @@ class Config:
     @property
     def remote_active(self):
         return self.route == "remote" and bool(self.remote)
-
 
 
 def config(settings=None):
@@ -384,8 +401,9 @@ def current_slot():
     from PySide6 import QtCore, QtGui
 
     mods = QtGui.QGuiApplication.queryKeyboardModifiers()
-    return slot_for(bool(mods & QtCore.Qt.ShiftModifier), bool(mods & QtCore.Qt.ControlModifier),
-                    bool(mods & QtCore.Qt.AltModifier))
+    return slot_for(
+        bool(mods & QtCore.Qt.ShiftModifier), bool(mods & QtCore.Qt.ControlModifier), bool(mods & QtCore.Qt.AltModifier)
+    )
 
 
 def maps_folder(cfg=None):
@@ -511,8 +529,10 @@ def copy_selection(slot=1, thumbnail=True, route=None):
 
     names = [str(node.name) for node in selection]
     source = os.path.join(str(rt.maxFilePath), str(rt.maxFileName)) if rt.maxFileName else ""
-    write_info(directory / INFO_NAME,
-               describe(names, source, year, save_as, faces=_selection_faces(), textures=len(set(mapping.values()))))
+    write_info(
+        directory / INFO_NAME,
+        describe(names, source, year, save_as, faces=_selection_faces(), textures=len(set(mapping.values()))),
+    )
     if thumbnail:
         try:
             capture_thumbnail(directory / THUMB_NAME)
@@ -554,8 +574,14 @@ def _merge_slot(directory, cfg):
     rt = _rt()
     material_flag = "useSceneMtlDups" if cfg.materials == "scene" else "renameMtlDups"
     before = set(rt.getHandleByAnim(n) for n in rt.objects)
-    rt.mergeMAXFile(str(directory / FILE_NAME), rt.Name("select"), rt.Name("autoRenameDups"),
-                    rt.Name(material_flag), rt.Name("neverReparent"), quiet=True)
+    rt.mergeMAXFile(
+        str(directory / FILE_NAME),
+        rt.Name("select"),
+        rt.Name("autoRenameDups"),
+        rt.Name(material_flag),
+        rt.Name("neverReparent"),
+        quiet=True,
+    )
     return [n for n in rt.objects if rt.getHandleByAnim(n) not in before]
 
 
@@ -672,8 +698,10 @@ def copy_materials(slot=1, route=None):
     source = os.path.join(str(rt.maxFilePath), str(rt.maxFileName)) if rt.maxFileName else ""
     write_info(directory / INFO_NAME, describe(names, source, maxhost.max_year(), kind="materials", colors=colors))
     where = "Material Editor" if str(origin) == "editor" else "selection"
-    _prompt("copied %s from the %s to material slot %d (%s)." % (plural(len(names), "material"), where, int(slot),
-                                                                summary(names)))
+    _prompt(
+        "copied %s from the %s to material slot %d (%s)."
+        % (plural(len(names), "material"), where, int(slot), summary(names))
+    )
     return len(names)
 
 
@@ -726,8 +754,10 @@ def copy_modifiers(slot=1, route=None):
     info = describe(names, scene, year, save_as, kind="modifiers")
     info["source_object"] = source
     write_info(directory / INFO_NAME, info)
-    _prompt("copied %s of %s to modifier slot %d (%s)." % (mode_word("modifiers", len(names)), source, int(slot),
-                                                          summary(names)))
+    _prompt(
+        "copied %s of %s to modifier slot %d (%s)."
+        % (mode_word("modifiers", len(names)), source, int(slot), summary(names))
+    )
     return len(names)
 
 
@@ -774,8 +804,10 @@ def copy_keys(slot=1, route=None):
     info = describe([source], scene, year, save_as, kind="animation")
     info.update({"count": keys, "source_object": source, "first_frame": first, "last_frame": last})
     write_info(directory / INFO_NAME, info)
-    _prompt("copied %s of %s (frames %d-%d) to key slot %d." % (mode_word("animation", keys), source, first, last,
-                                                               int(slot)))
+    _prompt(
+        "copied %s of %s (frames %d-%d) to key slot %d."
+        % (mode_word("animation", keys), source, first, last, int(slot))
+    )
     return keys
 
 
@@ -799,8 +831,9 @@ def paste_keys(slot=1, route=None, relative=None, frame=None, offset=None):
     offset = cfg.keys_offset if offset is None else int(offset)
     result = _ms().pasteKeys(str(directory / ANIMATION_FILE), bool(relative), frame, offset)
     targets, not_moved = int(result[0]), int(result[1])
-    extra = (" (%d kept the copied positions: their position controller cannot be offset)" % not_moved
-             if not_moved else "")
+    extra = (
+        " (%d kept the copied positions: their position controller cannot be offset)" % not_moved if not_moved else ""
+    )
     _prompt("pasted keys from slot %d onto %s%s." % (int(slot), plural(targets), extra))
     rt.redrawViews()
     return targets

@@ -119,9 +119,7 @@ def load_manifest(folder):
 
     tool_id = data.get("id")
     if not isinstance(tool_id, str) or not ID_PATTERN.match(tool_id):
-        raise ManifestError(
-            "'id' must be 2-48 chars of lowercase letters, digits or '_', starting with a letter"
-        )
+        raise ManifestError("'id' must be 2-48 chars of lowercase letters, digits or '_', starting with a letter")
     name = _optional_str(data, "name")
     if not name:
         raise ManifestError("'name' is required")

@@ -25,12 +25,22 @@ class ProxyType:
 
 TYPES = {
     "VRayProxy": ProxyType(
-        "VRayProxy", "V-Ray Proxy", "display",
-        {0: "Bounding box", 1: "Preview from file (edges)", 2: "Point", 3: "Preview from file (faces)", 4: "Whole mesh"},
+        "VRayProxy",
+        "V-Ray Proxy",
+        "display",
+        {
+            0: "Bounding box",
+            1: "Preview from file (edges)",
+            2: "Point",
+            3: "Preview from file (faces)",
+            4: "Whole mesh",
+        },
         {"box": 0, "preview": 3, "points": 2, "full": 4},
     ),
     "CProxy": ProxyType(
-        "CProxy", "Corona Proxy", "previzType",
+        "CProxy",
+        "Corona Proxy",
+        "previzType",
         {0: "Solid box", 1: "Wire box", 2: "Point cloud", 3: "Full mesh"},
         {"box": 1, "preview": 2, "points": 2, "full": 3},
     ),

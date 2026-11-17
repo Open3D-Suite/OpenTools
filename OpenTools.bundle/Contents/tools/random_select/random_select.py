@@ -20,10 +20,7 @@ def _handle(node):
 
 def _units(nodes):
     """Selected nodes, with members of closed groups folded into their group head."""
-    return [
-        n for n in nodes
-        if not (rt.isGroupMember(n) and not rt.isOpenGroupMember(n))
-    ]
+    return [n for n in nodes if not (rt.isGroupMember(n) and not rt.isOpenGroupMember(n))]
 
 
 def _with_group_members(nodes):
@@ -47,8 +44,8 @@ class RandomSelectWindow(toolwindow.ToolWindow):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self._pool = []          # handles of the selection the last pick came from
-        self._last = set()       # handles the last pick selected
+        self._pool = []  # handles of the selection the last pick came from
+        self._last = set()  # handles the last pick selected
 
         self.percent = QtWidgets.QSpinBox()
         self.percent.setRange(1, 100)

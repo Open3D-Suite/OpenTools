@@ -57,8 +57,10 @@ class RandomReplaceWindow(toolwindow.ToolWindow):
 
     def _replace_card(self):
         card = cards.Card("Replace objects")
-        about = cards.dim("Each selected object becomes a copy of one source, picked at random by weight "
-                          "(weight 40 is picked less often than 100; 0 never).")
+        about = cards.dim(
+            "Each selected object becomes a copy of one source, picked at random by weight "
+            "(weight 40 is picked less often than 100; 0 never)."
+        )
         about.setWordWrap(True)
         card.add_widget(about)
 
@@ -77,10 +79,18 @@ class RandomReplaceWindow(toolwindow.ToolWindow):
         card.add_widget(self.table)
 
         buttons = QtWidgets.QHBoxLayout()
-        buttons.addWidget(cards.button("Add selected as sources", self.guard(self.add_sources),
-                                       tooltip="Use the selected objects (with their children) as sources"))
-        buttons.addWidget(cards.button("Remove", self.guard(self.remove_sources),
-                                       tooltip="Remove the highlighted sources from the list"))
+        buttons.addWidget(
+            cards.button(
+                "Add selected as sources",
+                self.guard(self.add_sources),
+                tooltip="Use the selected objects (with their children) as sources",
+            )
+        )
+        buttons.addWidget(
+            cards.button(
+                "Remove", self.guard(self.remove_sources), tooltip="Remove the highlighted sources from the list"
+            )
+        )
         buttons.addWidget(cards.button("Clear", self.guard(self.clear_sources)))
         buttons.addStretch(1)
         card.body.addLayout(buttons)
@@ -89,8 +99,10 @@ class RandomReplaceWindow(toolwindow.ToolWindow):
         self.align.addItem("Bottom centers meet", "bottom")
         self.align.addItem("Source on the object's pivot", "pivot")
         self.align.setCurrentIndex(max(0, self.align.findData(self.options["align"])))
-        self.align.setToolTip("Where each copy goes: its bounding-box bottom center on the replaced object's, "
-                              "or on the replaced object's pivot. The object's rotation and scale are kept.")
+        self.align.setToolTip(
+            "Where each copy goes: its bounding-box bottom center on the replaced object's, "
+            "or on the replaced object's pivot. The object's rotation and scale are kept."
+        )
         self.align.activated.connect(lambda _i: self.set_option("align", self.align.currentData()))
         self.instance = QtWidgets.QCheckBox("Instances")
         self.instance.setChecked(bool(self.options["instance"]))
@@ -102,8 +114,14 @@ class RandomReplaceWindow(toolwindow.ToolWindow):
         options.addWidget(self.instance)
         card.body.addLayout(options)
 
-        card.add_widget(cards.button("Replace selected objects", self.guard(self.replace_selected), accent=True,
-                                     tooltip="Replace every selected object (sources excluded); undoable"))
+        card.add_widget(
+            cards.button(
+                "Replace selected objects",
+                self.guard(self.replace_selected),
+                accent=True,
+                tooltip="Replace every selected object (sources excluded); undoable",
+            )
+        )
         return card
 
     def _valid_sources(self):
@@ -118,15 +136,17 @@ class RandomReplaceWindow(toolwindow.ToolWindow):
         alive = self._valid_sources()
         if len(alive) != len(self.sources):
             self.sources = [s for s, _n in alive]
-        shown = [(self.table.item(r, 0).data(QtCore.Qt.UserRole) if self.table.item(r, 0) else None)
-                 for r in range(self.table.rowCount())]
+        shown = [
+            (self.table.item(r, 0).data(QtCore.Qt.UserRole) if self.table.item(r, 0) else None)
+            for r in range(self.table.rowCount())
+        ]
         names = [str(node.name) for _s, node in alive]
         if shown == [s["handle"] for s, _n in alive] and names == getattr(self, "_names_shown", None):
             self._update_shares()
             return
         self._names_shown = names
         self.table.setRowCount(0)
-        for (source, node) in alive:
+        for source, node in alive:
             row = self.table.rowCount()
             self.table.insertRow(row)
             item = QtWidgets.QTableWidgetItem(str(node.name))
@@ -147,7 +167,7 @@ class RandomReplaceWindow(toolwindow.ToolWindow):
 
     def _update_shares(self):
         shares = replace.share([s["weight"] for s in self.sources])
-        for row, share in enumerate(shares[:self.table.rowCount()]):
+        for row, share in enumerate(shares[: self.table.rowCount()]):
             item = self.table.item(row, 2)
             if item is not None:
                 item.setText("%.0f%%" % share)
@@ -200,12 +220,19 @@ class RandomReplaceWindow(toolwindow.ToolWindow):
             _prompt("every source has weight 0: give at least one a weight above 0.")
             return
         result = _core().replaceWeighted(
-            rt.Array(*source_nodes), rt.Array(*[p + 1 for p in picks]), rt.Array(*targets),
-            bool(self.instance.isChecked()), rt.Name(self.align.currentData()),
+            rt.Array(*source_nodes),
+            rt.Array(*[p + 1 for p in picks]),
+            rt.Array(*targets),
+            bool(self.instance.isChecked()),
+            rt.Name(self.align.currentData()),
         )
         rt.redrawViews()
-        text = "Replaced %d object%s with %d source%s." % (len(targets), "" if len(targets) == 1 else "s",
-                                                          len(alive), "" if len(alive) == 1 else "s")
+        text = "Replaced %d object%s with %d source%s." % (
+            len(targets),
+            "" if len(targets) == 1 else "s",
+            len(alive),
+            "" if len(alive) == 1 else "s",
+        )
         _prompt(text)
         self.set_status(text + " (%d new nodes)" % len(list(result)))
 

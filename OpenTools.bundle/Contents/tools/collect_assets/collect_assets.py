@@ -14,34 +14,50 @@ from opentools.ui.assetlist import plural
 
 SCENE_VERSIONS = (0, 2025, 2026)
 # collect options that lived in the Asset Manager before it was split (0.5.1)
-CARRIED_OVER = ("selected_only", "include_xrefs", "collect_folder", "collect_subfolder", "ascii_names",
-                "relink_to_copies", "copy_scene", "scene_version", "make_zip")
+CARRIED_OVER = (
+    "selected_only",
+    "include_xrefs",
+    "collect_folder",
+    "collect_subfolder",
+    "ascii_names",
+    "relink_to_copies",
+    "copy_scene",
+    "scene_version",
+    "make_zip",
+)
 
 
 class CollectAssetsWindow(assetlist.AssetListWindow):
     TOOL_ID = "collect_assets"
     TITLE = "Collect Assets"
-    DEFAULTS = dict(assetlist.LIST_DEFAULTS, **{
-        "collect_folder": "",
-        "collect_subfolder": "maps",
-        "ascii_names": False,
-        "relink_to_copies": True,
-        "copy_scene": False,
-        "scene_version": 0,
-        "make_zip": False,
-        "size": [900, 600],
-    })
+    DEFAULTS = dict(
+        assetlist.LIST_DEFAULTS,
+        **{
+            "collect_folder": "",
+            "collect_subfolder": "maps",
+            "ascii_names": False,
+            "relink_to_copies": True,
+            "copy_scene": False,
+            "scene_version": 0,
+            "make_zip": False,
+            "size": [900, 600],
+        },
+    )
 
     def panel(self):
         widget = QtWidgets.QWidget()
         self.collect_folder = QtWidgets.QLineEdit(self.options["collect_folder"] or self._default_folder())
-        self.collect_folder.editingFinished.connect(lambda: self.set_option("collect_folder", self.collect_folder.text()))
+        self.collect_folder.editingFinished.connect(
+            lambda: self.set_option("collect_folder", self.collect_folder.text())
+        )
         browse = QtWidgets.QPushButton("Browse…")
         browse.clicked.connect(self._browse)
         self.subfolder = QtWidgets.QLineEdit(self.options["collect_subfolder"])
         self.subfolder.setPlaceholderText("(none)")
         self.subfolder.setMaximumWidth(140)
-        self.subfolder.editingFinished.connect(lambda: self.set_option("collect_subfolder", self.subfolder.text().strip()))
+        self.subfolder.editingFinished.connect(
+            lambda: self.set_option("collect_subfolder", self.subfolder.text().strip())
+        )
         row = QtWidgets.QHBoxLayout()
         row.addWidget(QtWidgets.QLabel("Folder"))
         row.addWidget(self.collect_folder, 1)
@@ -56,16 +72,25 @@ class CollectAssetsWindow(assetlist.AssetListWindow):
         version.currentIndexChanged.connect(lambda i: self.set_option("scene_version", version.itemData(i)))
         grid = QtWidgets.QGridLayout()
         grid.addWidget(self.check("relink_to_copies", "Relink the scene to the copies"), 0, 0)
-        grid.addWidget(self.check("ascii_names", "Latin-only file names",
-                                  "Copies whose names have Cyrillic, accents, etc. get a Latin name."), 1, 0)
+        grid.addWidget(
+            self.check(
+                "ascii_names",
+                "Latin-only file names",
+                "Copies whose names have Cyrillic, accents, etc. get a Latin name.",
+            ),
+            1,
+            0,
+        )
         grid.addWidget(self.check("copy_scene", "Save a copy of the scene, for"), 0, 1)
         grid.addWidget(version, 0, 2)
         grid.addWidget(self.check("make_zip", "Zip the folder afterwards"), 1, 1)
         run = QtWidgets.QPushButton("Collect")
         run.setMinimumHeight(28)
-        run.setToolTip("Copies every found file (or those of the selected objects) into the folder.\n"
-                       "Files with the same name and content are copied once; same name but\n"
-                       "different content get a number (wood_2.jpg).")
+        run.setToolTip(
+            "Copies every found file (or those of the selected objects) into the folder.\n"
+            "Files with the same name and content are copied once; same name but\n"
+            "different content get a number (wood_2.jpg)."
+        )
         run.clicked.connect(self.guard(self.collect))
         grid.addWidget(run, 1, 3)
         grid.setColumnStretch(2, 1)
@@ -115,11 +140,18 @@ class CollectAssetsWindow(assetlist.AssetListWindow):
         o = self.options
         try:
             report = assets.collect(
-                destination, assets=self.items, selected_only=o["selected_only"],
-                include_xrefs=o["include_xrefs"], ascii_names=o["ascii_names"],
-                relink=o["relink_to_copies"], copy_scene=o["copy_scene"],
-                scene_version=o["scene_version"], make_zip=o["make_zip"],
-                progress=on_progress, should_stop=should_stop)
+                destination,
+                assets=self.items,
+                selected_only=o["selected_only"],
+                include_xrefs=o["include_xrefs"],
+                ascii_names=o["ascii_names"],
+                relink=o["relink_to_copies"],
+                copy_scene=o["copy_scene"],
+                scene_version=o["scene_version"],
+                make_zip=o["make_zip"],
+                progress=on_progress,
+                should_stop=should_stop,
+            )
         finally:
             progress.close()
         self.refresh()
@@ -127,7 +159,10 @@ class CollectAssetsWindow(assetlist.AssetListWindow):
             self.report("Stopped after copying %s; the scene was not changed." % plural(report["copied"], "file"))
             return
         message = "Collected into %s: %d copied, %d already there." % (
-            report["folder"], report["copied"], report["reused"])
+            report["folder"],
+            report["copied"],
+            report["reused"],
+        )
         if report["missing"]:
             message += " %d missing files skipped." % len(report["missing"])
         if report["scene_copy"]:

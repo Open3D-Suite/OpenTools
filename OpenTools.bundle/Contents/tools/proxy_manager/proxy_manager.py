@@ -48,8 +48,19 @@ def scan(selected_only=False):
     result = []
     for row in rows:
         node = row[0]
-        result.append(Proxy(node, str(node.name), str(row[1]).lstrip("_"), str(row[2]), bool(row[3]),
-                            int(row[4]), bool(row[5]), bool(row[6]), bool(row[7])))
+        result.append(
+            Proxy(
+                node,
+                str(node.name),
+                str(row[1]).lstrip("_"),
+                str(row[2]),
+                bool(row[3]),
+                int(row[4]),
+                bool(row[5]),
+                bool(row[6]),
+                bool(row[7]),
+            )
+        )
     return result
 
 
@@ -103,8 +114,12 @@ class ProxyManagerWindow(toolwindow.ToolWindow):
         self.selected_only = self.check("selected_only", "Selected objects only")
         self.selected_only.toggled.connect(self.guard(lambda *_: self.scanned and self.refresh()))
         self.filter = QtWidgets.QComboBox()
-        for value, label in (("all", "All proxies"), ("missing", "Missing file"), ("hidden", "Hidden"),
-                             ("box", "Shown as box")):
+        for value, label in (
+            ("all", "All proxies"),
+            ("missing", "Missing file"),
+            ("hidden", "Hidden"),
+            ("box", "Shown as box"),
+        ):
             self.filter.addItem(label, value)
         self.filter.setCurrentIndex(max(0, self.filter.findData(self.options["filter"])))
         self.filter.currentIndexChanged.connect(self._filter_changed)
@@ -117,8 +132,9 @@ class ProxyManagerWindow(toolwindow.ToolWindow):
             top.addWidget(widget)
         top.addWidget(self.search, 1)
 
-        self.tree = tables.make_tree(["Object", "Type", "Display", "Box", "Hidden", "Users", "File"],
-                                     [190, 110, 170, 45, 55, 50])
+        self.tree = tables.make_tree(
+            ["Object", "Type", "Display", "Box", "Hidden", "Users", "File"], [190, 110, 170, 45, 55, 50]
+        )
         self.tree.itemDoubleClicked.connect(self.guard(self._select_rows))
         self.tree.customContextMenuRequested.connect(self._context_menu)
         self.tree.itemSelectionChanged.connect(self._update_scope)
@@ -140,7 +156,11 @@ class ProxyManagerWindow(toolwindow.ToolWindow):
         )
         node_row = tables.button_row(
             "Viewport:",
-            ("Show as box", "Object property 'Display as Box': works with any proxy type", g(lambda: self._flag("boxMode", True, "Proxy Box Mode"))),
+            (
+                "Show as box",
+                "Object property 'Display as Box': works with any proxy type",
+                g(lambda: self._flag("boxMode", True, "Proxy Box Mode")),
+            ),
             ("Normal", "Turn 'Display as Box' off", g(lambda: self._flag("boxMode", False, "Proxy Box Mode"))),
             ("Hide", "Hide these proxies", g(lambda: self._flag("isHidden", True, "Hide Proxies"))),
             ("Unhide", "Unhide these proxies", g(lambda: self._flag("isHidden", False, "Unhide Proxies"))),
@@ -176,8 +196,9 @@ class ProxyManagerWindow(toolwindow.ToolWindow):
             tables.set_cell(row, 3, "✓" if item.box else "", sort=int(item.box), center=True)
             tables.set_cell(row, 4, "✓" if item.hidden else "", sort=int(item.hidden), center=True)
             count = users.get(item.file.lower(), 0) if item.file else 0
-            tables.set_cell(row, 5, count or "", sort=count, center=True,
-                            tooltip="Proxies in the scene that load this file")
+            tables.set_cell(
+                row, 5, count or "", sort=count, center=True, tooltip="Proxies in the scene that load this file"
+            )
             if not item.file:
                 tables.set_cell(row, 6, "(no file)", color=DIM_COLOR)
             elif not item.exists:
@@ -192,14 +213,21 @@ class ProxyManagerWindow(toolwindow.ToolWindow):
         self.tree.setSortingEnabled(True)
         missing = sum(1 for item in self.items if item.file and not item.exists)
         by_type = Counter(item.kind.label for item in self.items)
-        text = "%d prox%s · %d file%s" % (len(self.items), "y" if len(self.items) == 1 else "ies",
-                                         len(users), "" if len(users) == 1 else "s")
+        text = "%d prox%s · %d file%s" % (
+            len(self.items),
+            "y" if len(self.items) == 1 else "ies",
+            len(users),
+            "" if len(users) == 1 else "s",
+        )
         if by_type:
             text += " · " + ", ".join("%s %d" % pair for pair in sorted(by_type.items()))
         if missing:
             text += " · <span style='color:%s'>%d missing</span>" % (MISSING_COLOR, missing)
-        self.summary.setText(text if self.items else "No proxies in %s." % (
-            "the selection" if self.selected_only.isChecked() else "the scene"))
+        self.summary.setText(
+            text
+            if self.items
+            else "No proxies in %s." % ("the selection" if self.selected_only.isChecked() else "the scene")
+        )
         self._apply_filter()
 
     def _filter_changed(self):
@@ -225,8 +253,9 @@ class ProxyManagerWindow(toolwindow.ToolWindow):
     def _update_scope(self):
         highlighted = [r for r in self.tree.selectedItems() if not r.isHidden()]
         shown = sum(1 for i in range(self.tree.topLevelItemCount()) if not self.tree.topLevelItem(i).isHidden())
-        self.scope.setText("Buttons act on %s" % (
-            "%d highlighted" % len(highlighted) if highlighted else "all %d listed" % shown))
+        self.scope.setText(
+            "Buttons act on %s" % ("%d highlighted" % len(highlighted) if highlighted else "all %d listed" % shown)
+        )
 
     def _chosen(self):
         if not self.scanned:

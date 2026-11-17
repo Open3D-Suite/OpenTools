@@ -46,7 +46,9 @@ def scene_info(core=None):
     """Everything the Overview tab shows, as plain Python values."""
     core = core or api()
     raw = _pairs(core.info())
-    info = {key: (int(value) if isinstance(value, (int, float)) else value) for key, value in raw.items() if key != "top"}
+    info = {
+        key: (int(value) if isinstance(value, (int, float)) else value) for key, value in raw.items() if key != "top"
+    }
     info["color"] = str(raw.get("color") or "")
     info["renderer"] = str(raw.get("renderer", "")).lstrip("_")
     info["top"] = [(int(row[0]), str(row[1]), row[2]) for row in raw.get("top", [])]
@@ -144,8 +146,9 @@ def security_scan(core=None):
             for event, callback_id, script in inspector.parse_callbacks(text):
                 reason = inspector.suspicious(callback_id, script)
                 if reason:
-                    found.append(SecurityItem("callback", callback_id,
-                                              "Callback #%s on %s" % (callback_id, event), reason))
+                    found.append(
+                        SecurityItem("callback", callback_id, "Callback #%s on %s" % (callback_id, event), reason)
+                    )
             continue
         reason = inspector.suspicious(label if kind != "file" else os.path.basename(str(key)), text)
         if reason:

@@ -31,7 +31,7 @@ class MenuTests(unittest.TestCase):
         self.assertEqual([i[1] for i in items[:3]], ["hub", "palette", "sep1"])
         submenus = [i[2] for i in items if i[0] == "submenu"]
         self.assertEqual(submenus, ["Modeling", "Scene", "Selection"])  # alphabetical
-        scene = items[items.index(("submenu", "cat.Scene", "Scene", None)) + 1:][:2]
+        scene = items[items.index(("submenu", "cat.Scene", "Scene", None)) + 1 :][:2]
         self.assertEqual([i[2] for i in scene], ["Auditor", "Clean DWG"])  # by name, not by list order
 
     def test_source(self):

@@ -57,10 +57,11 @@ class XRefManagerWindow(toolwindow.ToolWindow):
 
     # ================================================================ scenes
     def _scenes_tab(self):
-        self.scene_tree = tables.make_tree(["File", "Status", "Enabled", "Visible", "Box", "Auto update", "Objects", "Folder"],
-                                           [200, 70, 60, 55, 45, 80, 60])
-        self.scene_tree.customContextMenuRequested.connect(
-            lambda pos: self._context_menu(self.scene_tree, pos, None))
+        self.scene_tree = tables.make_tree(
+            ["File", "Status", "Enabled", "Visible", "Box", "Auto update", "Objects", "Folder"],
+            [200, 70, 60, 55, 45, 80, 60],
+        )
+        self.scene_tree.customContextMenuRequested.connect(lambda pos: self._context_menu(self.scene_tree, pos, None))
         g = self.guard
         act = lambda action, label: g(lambda: self._scene_action(action, label))  # noqa: E731
         row1 = tables.button_row(
@@ -97,8 +98,13 @@ class XRefManagerWindow(toolwindow.ToolWindow):
             row = tables.SortItem()
             row.setData(0, tables.DATA_ROLE, {"index": int(index), "file": path})
             tables.set_cell(row, 0, os.path.basename(path), tooltip=path)
-            tables.set_cell(row, 1, "Found" if exists else "Missing", sort=int(bool(exists)),
-                            color=None if exists else MISSING_COLOR)
+            tables.set_cell(
+                row,
+                1,
+                "Found" if exists else "Missing",
+                sort=int(bool(exists)),
+                color=None if exists else MISSING_COLOR,
+            )
             for column, value in ((2, not disabled), (3, not hidden), (4, box), (5, auto)):
                 tables.set_cell(row, column, CHECK if value else "", sort=int(bool(value)), center=True)
             tables.set_cell(row, 6, int(count), sort=int(count), center=True)
@@ -124,7 +130,9 @@ class XRefManagerWindow(toolwindow.ToolWindow):
         self.refresh()
 
     def _add_scene(self):
-        path, _ = QtWidgets.QFileDialog.getOpenFileName(self, "XRef scene", str(rt.maxFilePath), "3ds Max scenes (*.max)")
+        path, _ = QtWidgets.QFileDialog.getOpenFileName(
+            self, "XRef scene", str(rt.maxFilePath), "3ds Max scenes (*.max)"
+        )
         if path:
             rt.xrefs.addNewXRefFile(path)
             rt.redrawViews()
@@ -132,21 +140,32 @@ class XRefManagerWindow(toolwindow.ToolWindow):
 
     # =============================================================== objects
     def _objects_tab(self):
-        self.record_tree = tables.make_tree(["File", "Status", "Enabled", "Auto update", "Objects", "Nodes", "Box", "Hidden", "Folder"],
-                                            [200, 70, 60, 80, 60, 55, 45, 55])
+        self.record_tree = tables.make_tree(
+            ["File", "Status", "Enabled", "Auto update", "Objects", "Nodes", "Box", "Hidden", "Folder"],
+            [200, 70, 60, 80, 60, 55, 45, 55],
+        )
         self.record_tree.itemDoubleClicked.connect(self.guard(self._select_record_nodes))
         self.record_tree.customContextMenuRequested.connect(
-            lambda pos: self._context_menu(self.record_tree, pos, self._select_record_nodes))
+            lambda pos: self._context_menu(self.record_tree, pos, self._select_record_nodes)
+        )
         g = self.guard
         node = lambda attr, value, label: g(lambda: self._record_nodes_flag(attr, value, label))  # noqa: E731
         act = lambda action, label: g(lambda: self._record_action(action, label))  # noqa: E731
         row1 = tables.button_row(
             "Display:",
-            ("Box", "Show these XRef objects as boxes (object property 'Display as Box')", node("boxMode", True, "XRef objects as box")),
+            (
+                "Box",
+                "Show these XRef objects as boxes (object property 'Display as Box')",
+                node("boxMode", True, "XRef objects as box"),
+            ),
             ("Full", "Show the full geometry", node("boxMode", False, "XRef objects full")),
             ("Hide", "Hide the objects of these records", node("isHidden", True, "Hide XRef objects")),
             ("Show", "Unhide the objects of these records", node("isHidden", False, "Show XRef objects")),
-            ("Disable", "Disable the records (objects stay in the scene, not updated)", act("disable", "XRef records disable")),
+            (
+                "Disable",
+                "Disable the records (objects stay in the scene, not updated)",
+                act("disable", "XRef records disable"),
+            ),
             ("Enable", "Enable the records again", act("enable", "XRef records enable")),
             None,
             ("Select objects", "Select the objects of these records", g(self._select_record_nodes)),
@@ -179,8 +198,13 @@ class XRefManagerWindow(toolwindow.ToolWindow):
             name = os.path.basename(path) + ("  (nested)" if nested else "")
             tables.set_cell(row, 0, name, tooltip=path)
             status = "Missing" if not exists else ("Unresolved" if unresolved else "Found")
-            tables.set_cell(row, 1, status, sort=int(bool(exists) and not unresolved),
-                            color=None if status == "Found" else MISSING_COLOR)
+            tables.set_cell(
+                row,
+                1,
+                status,
+                sort=int(bool(exists) and not unresolved),
+                color=None if status == "Found" else MISSING_COLOR,
+            )
             tables.set_cell(row, 2, CHECK if enabled else "", sort=int(bool(enabled)), center=True)
             tables.set_cell(row, 3, CHECK if auto else "", sort=int(bool(auto)), center=True)
             tables.set_cell(row, 4, int(items), sort=int(items), center=True)
@@ -229,7 +253,9 @@ class XRefManagerWindow(toolwindow.ToolWindow):
         self._select([n for row in self._record_rows() for n in row.data(0, tables.DATA_ROLE)["nodes"]])
 
     def _add_objects(self):
-        path, _ = QtWidgets.QFileDialog.getOpenFileName(self, "XRef objects", str(rt.maxFilePath), "3ds Max scenes (*.max)")
+        path, _ = QtWidgets.QFileDialog.getOpenFileName(
+            self, "XRef objects", str(rt.maxFilePath), "3ds Max scenes (*.max)"
+        )
         if path:
             rt.objXRefMgr.AddXRefItemsFromFile(path, promptObjNames=True)
             rt.redrawViews()
@@ -244,7 +270,11 @@ class XRefManagerWindow(toolwindow.ToolWindow):
         self._fill_records(records)
         missing = sum(1 for r in scenes if not r[2]) + sum(1 for r in records if not r[2])
         text = "%d XRef scene%s · %d XRef object record%s" % (
-            len(scenes), "" if len(scenes) == 1 else "s", len(records), "" if len(records) == 1 else "s")
+            len(scenes),
+            "" if len(scenes) == 1 else "s",
+            len(records),
+            "" if len(records) == 1 else "s",
+        )
         if missing:
             text += " · <span style='color:%s'>%d missing</span>" % (MISSING_COLOR, missing)
         self.summary.setText(text)

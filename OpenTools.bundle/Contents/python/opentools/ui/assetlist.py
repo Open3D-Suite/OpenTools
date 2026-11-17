@@ -120,8 +120,9 @@ class AssetListWindow(toolwindow.ToolWindow):
     def refresh(self):
         QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
         try:
-            self.items = assets.scan(selected_only=self.options["selected_only"],
-                                     include_xrefs=self.options["include_xrefs"])
+            self.items = assets.scan(
+                selected_only=self.options["selected_only"], include_xrefs=self.options["include_xrefs"]
+            )
             self.scanned = True
         finally:
             QtWidgets.QApplication.restoreOverrideCursor()
@@ -131,8 +132,12 @@ class AssetListWindow(toolwindow.ToolWindow):
             item = SizeItem(self.tree)
             state = "elsewhere" if asset.found_elsewhere else asset.status
             item.setIcon(0, common.dot_icon(COLORS[state], 12))
-            item.setToolTip(0, {"missing": "Missing", "ok": "Found",
-                                "elsewhere": "Found through the map paths:\n" + asset.resolved}[state])
+            item.setToolTip(
+                0,
+                {"missing": "Missing", "ok": "Found", "elsewhere": "Found through the map paths:\n" + asset.resolved}[
+                    state
+                ],
+            )
             item.setText(1, asset.name)
             item.setText(2, asset.folder)
             item.setText(3, assets.human_size(asset.size))
@@ -151,7 +156,9 @@ class AssetListWindow(toolwindow.ToolWindow):
         self._apply_filter()
         missing = sum(1 for a in self.items if a.status == "missing")
         total = sum(a.size or 0 for a in self.items)
-        self.summary.setText("%s · %d missing · %s" % (plural(len(self.items), "file"), missing, assets.human_size(total)))
+        self.summary.setText(
+            "%s · %d missing · %s" % (plural(len(self.items), "file"), missing, assets.human_size(total))
+        )
 
     def _filter_changed(self, index):
         self.set_option("filter", self.filter.itemData(index))

@@ -21,8 +21,14 @@ class MaterialHelperTests(unittest.TestCase):
         self.assertEqual([e.handle for e in ordered], [3, 9])
 
     def test_entry_from_row(self):
-        row = [62921, "Metal", "_CoronaPhysicalMtl", 4,
-               [[300.0, -5, 20.4], [1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12]], True]
+        row = [
+            62921,
+            "Metal",
+            "_CoronaPhysicalMtl",
+            4,
+            [[300.0, -5, 20.4], [1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12]],
+            True,
+        ]
         e = materials.entry_from_row(row)
         self.assertEqual(e.handle, 62921)
         self.assertEqual(e.kind, "CoronaPhysicalMtl")

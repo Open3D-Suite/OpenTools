@@ -245,9 +245,9 @@ def zip_folder(folder, zip_path, should_stop=None):
 # =========================================================== 3ds Max side
 @dataclass
 class Asset:
-    path: str                      # as stored in the scene
-    status: str                    # "ok" or "missing"
-    resolved: str = ""             # where 3ds Max actually finds it (map paths, etc.)
+    path: str  # as stored in the scene
+    status: str  # "ok" or "missing"
+    resolved: str = ""  # where 3ds Max actually finds it (map paths, etc.)
     owners: list = field(default_factory=list)  # node names, or SCENE_OWNER
     size: int = None
 
@@ -353,8 +353,7 @@ def retarget(mapping):
     return changed
 
 
-def relink_missing(folders, recursive=True, ignore_extension=False, assets=None, choices=None,
-                   should_stop=None):
+def relink_missing(folders, recursive=True, ignore_extension=False, assets=None, choices=None, should_stop=None):
     """Find every missing file in `folders` and relink it.
 
     choices: {missing path: chosen path} for files that had several different candidates.
@@ -447,9 +446,19 @@ def save_scene_copy(target, version=0, selected_only=False):
     return target
 
 
-def collect(destination, assets=None, selected_only=False, include_xrefs=True,
-            ascii_names=False, relink=True, copy_scene=False, scene_version=0,
-            make_zip=False, progress=None, should_stop=None):
+def collect(
+    destination,
+    assets=None,
+    selected_only=False,
+    include_xrefs=True,
+    ascii_names=False,
+    relink=True,
+    copy_scene=False,
+    scene_version=0,
+    make_zip=False,
+    progress=None,
+    should_stop=None,
+):
     """Copy the scene's files into `destination` and (optionally) relink to the copies.
 
     copy_scene saves a copy of the .max next to the files, pointing at the copies;
@@ -487,9 +496,13 @@ def collect(destination, assets=None, selected_only=False, include_xrefs=True,
         if step.action in ("copy", "reuse") and norm(asset.path) != norm(step.target):
             mapping[asset.path] = step.target
     report = {
-        "copied": copied, "reused": reused, "stopped": stopped,
+        "copied": copied,
+        "reused": reused,
+        "stopped": stopped,
         "missing": [a.path for a in assets if a.status == "missing"],
-        "folder": str(destination), "scene_copy": "", "zip": "",
+        "folder": str(destination),
+        "scene_copy": "",
+        "zip": "",
     }
     if stopped:
         return report
@@ -500,8 +513,7 @@ def collect(destination, assets=None, selected_only=False, include_xrefs=True,
         name = str(rt.maxFileName) or "untitled_scene.max"
         if selected_only:
             name = os.path.splitext(name)[0] + "_selection.max"
-        report["scene_copy"] = save_scene_copy(
-            destination / name, version=scene_version, selected_only=selected_only)
+        report["scene_copy"] = save_scene_copy(destination / name, version=scene_version, selected_only=selected_only)
 
     if relink:
         if mapping:

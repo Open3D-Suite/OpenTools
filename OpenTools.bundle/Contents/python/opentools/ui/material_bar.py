@@ -199,9 +199,7 @@ class _Delegate(QtWidgets.QStyledItemDelegate):
         )
         color.setAlpha(140)
         painter.setPen(color)
-        painter.drawText(
-            option.rect.adjusted(0, 0, -8, 0), QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter, extra
-        )
+        painter.drawText(option.rect.adjusted(0, 0, -8, 0), QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter, extra)
         painter.restore()
 
     def sizeHint(self, option, index):
@@ -274,8 +272,10 @@ class SelectionRow(QtWidgets.QFrame):
         self.setObjectName("OpenTools_MaterialSelection")
         self.handle = None  # what it shows: a material handle, materials.NONE, or None ("—")
         self.name = ""
-        self.setToolTip("Material of the selected object (— when several are selected).\n"
-                        "Double-click: select the objects that use it.")
+        self.setToolTip(
+            "Material of the selected object (— when several are selected).\n"
+            "Double-click: select the objects that use it."
+        )
 
         prefix = theme.dim_label("Selected:")
         self.swatch = QtWidgets.QLabel()
@@ -324,8 +324,9 @@ class MaterialBar(QtWidgets.QFrame):
         self._entries = {}
 
         self.combo = MaterialCombo()
-        self.combo.setToolTip("Current material. Click to list the scene's materials, type to filter.\n"
-                              "Right-click for more options.")
+        self.combo.setToolTip(
+            "Current material. Click to list the scene's materials, type to filter.\nRight-click for more options."
+        )
         self.combo.about_to_open.connect(self.refresh)
         self.combo.activated.connect(self._on_activated)
         self.swatch_action = QtGui.QAction(self)  # owned by the bar, shown in the line edit
@@ -638,8 +639,7 @@ class MaterialBar(QtWidgets.QFrame):
         if applied == 0:
             if not quiet_if_empty:
                 materials.prompt(
-                    "select geometry or shapes first." if skipped == 0
-                    else "the selection has no geometry or shapes."
+                    "select geometry or shapes first." if skipped == 0 else "the selection has no geometry or shapes."
                 )
             return
         if self.current == materials.NONE:

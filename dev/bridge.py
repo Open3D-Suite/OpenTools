@@ -87,7 +87,7 @@ def main(argv=None):
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, "reconfigure"):
             stream.reconfigure(encoding="utf-8", errors="replace")
-    parser =argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("target", nargs="?", help="'ping', 'reload' or a .py file to run")
     parser.add_argument("-c", dest="code", help="code to run")
     parser.add_argument("--timeout", type=float, default=60.0, help="seconds to wait (default 60)")
@@ -109,7 +109,9 @@ def main(argv=None):
     data = send(code, args.timeout)
     if data.get("timeout"):
         if data.get("picked_up"):
-            print("3ds Max took the job but did not answer within %.0fs (still running?)." % args.timeout, file=sys.stderr)
+            print(
+                "3ds Max took the job but did not answer within %.0fs (still running?)." % args.timeout, file=sys.stderr
+            )
         else:
             print(
                 "No answer from 3ds Max. Is it open, with OpenTools loaded via dev/install_dev.ps1?",

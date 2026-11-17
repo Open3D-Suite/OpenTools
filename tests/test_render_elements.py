@@ -6,8 +6,14 @@ from pathlib import Path
 
 import helpers  # noqa: F401 - quiets logging
 
-_PATH = (Path(__file__).resolve().parents[1] / "OpenTools.bundle" / "Contents" / "tools"
-         / "render_elements" / "elements_model.py")
+_PATH = (
+    Path(__file__).resolve().parents[1]
+    / "OpenTools.bundle"
+    / "Contents"
+    / "tools"
+    / "render_elements"
+    / "elements_model.py"
+)
 _spec = importlib.util.spec_from_file_location("render_elements_model", _PATH)
 model = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(model)
@@ -17,8 +23,12 @@ def el(name, cls):
     return {"name": name, "cls": cls, "enabled": True, "file": ""}
 
 
-CORONA_SCENE = [el("Wire", "CMasking_WireColor"), el("Z", "CGeometry_ZDepth"), el("Refl", "CESSENTIAL_Reflect"),
-                el("VWire", "VRayWireColor")]
+CORONA_SCENE = [
+    el("Wire", "CMasking_WireColor"),
+    el("Z", "CGeometry_ZDepth"),
+    el("Refl", "CESSENTIAL_Reflect"),
+    el("VWire", "VRayWireColor"),
+]
 BASE = (r"D:\out", "shot", ".exr")
 
 
@@ -130,9 +140,17 @@ class Plans(unittest.TestCase):
 
 class Records(unittest.TestCase):
     def test_round_trip(self):
-        rec = {"v": model.RECORD_VERSION, "save": True, "output": r"D:\out\shot.exr", "time_type": 2, "active": True,
-               "elements": CORONA_SCENE, "renderer_cls": "Corona", "renderer": {"shading_onlyElements": False},
-               "temp": [{"name": "Mask", "cls": "CMasking_Mask"}]}
+        rec = {
+            "v": model.RECORD_VERSION,
+            "save": True,
+            "output": r"D:\out\shot.exr",
+            "time_type": 2,
+            "active": True,
+            "elements": CORONA_SCENE,
+            "renderer_cls": "Corona",
+            "renderer": {"shading_onlyElements": False},
+            "temp": [{"name": "Mask", "cls": "CMasking_Mask"}],
+        }
         self.assertEqual(model.record_from_json(model.record_to_json(rec)), rec)
 
     def test_rejects_other_text(self):

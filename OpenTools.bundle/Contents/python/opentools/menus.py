@@ -61,8 +61,10 @@ def menu_source(tools):
     ]
     for kind, key, title, macro in menu_items(tools):
         if kind == "action":
-            lines.append("    sub.CreateMacroScriptAction %s %s %s title:%s"
-                         % (q(guid(key)), q(macro), q(macros.CATEGORY), q(title)))
+            lines.append(
+                "    sub.CreateMacroScriptAction %s %s %s title:%s"
+                % (q(guid(key)), q(macro), q(macros.CATEGORY), q(title))
+            )
         elif kind == "separator":
             lines.append("    m.CreateSeparator %s" % q(guid(key)))
         elif kind == "submenu":

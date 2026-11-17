@@ -12,8 +12,24 @@ import unittest
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-TEXT_EXTENSIONS = (".py", ".ms", ".mcr", ".json", ".xml", ".md", ".txt", ".ui", ".qss", ".toml", ".yml", ".yaml",
-                   ".cfg", ".ini", ".svg", ".ps1")
+TEXT_EXTENSIONS = (
+    ".py",
+    ".ms",
+    ".mcr",
+    ".json",
+    ".xml",
+    ".md",
+    ".txt",
+    ".ui",
+    ".qss",
+    ".toml",
+    ".yml",
+    ".yaml",
+    ".cfg",
+    ".ini",
+    ".svg",
+    ".ps1",
+)
 TEXT_NAMES = ("LICENSE", ".gitattributes", ".gitignore")
 
 
@@ -26,16 +42,20 @@ def as_cp1252(data):
 _TRAIL_BYTES = bytes(range(0x80, 0xC0))
 _TRAIL = "[%s]" % re.escape("".join(sorted(set(as_cp1252(_TRAIL_BYTES) + _TRAIL_BYTES.decode("latin-1")))))
 
-MOJIBAKE = re.compile("|".join((
-    "\xe2\N{EURO SIGN}",  # curly quotes, dashes, bullet, ellipsis (U+2000-U+203F), whatever follows
-    "\xe2%s{2}" % _TRAIL,  # arrows, check marks, squares and the rest of U+2000-U+2FFF
-    "\xc3%s" % _TRAIL,  # accented Latin letters (U+00C0-U+00FF)
-    "\xc2[\xa0-\xbf]",  # no-break space, middle dot, degree sign (U+00A0-U+00BF)
-    "[\xd0\xd1]%s" % _TRAIL,  # Cyrillic
-    "\xef\xbb\xbf",  # byte order mark
-    "\xf0%s{3}" % _TRAIL,  # emoji
-    "\N{REPLACEMENT CHARACTER}",  # the original text is already lost
-)))
+MOJIBAKE = re.compile(
+    "|".join(
+        (
+            "\xe2\N{EURO SIGN}",  # curly quotes, dashes, bullet, ellipsis (U+2000-U+203F), whatever follows
+            "\xe2%s{2}" % _TRAIL,  # arrows, check marks, squares and the rest of U+2000-U+2FFF
+            "\xc3%s" % _TRAIL,  # accented Latin letters (U+00C0-U+00FF)
+            "\xc2[\xa0-\xbf]",  # no-break space, middle dot, degree sign (U+00A0-U+00BF)
+            "[\xd0\xd1]%s" % _TRAIL,  # Cyrillic
+            "\xef\xbb\xbf",  # byte order mark
+            "\xf0%s{3}" % _TRAIL,  # emoji
+            "\N{REPLACEMENT CHARACTER}",  # the original text is already lost
+        )
+    )
+)
 
 
 def problems_in(data):
@@ -44,8 +64,11 @@ def problems_in(data):
         text = data.decode("utf-8")
     except UnicodeDecodeError as error:
         return ["not valid UTF-8 (byte 0x%02X at offset %d)" % (data[error.start], error.start)]
-    return ["line %d: %s" % (number, ascii(line.strip()[:120]))
-            for number, line in enumerate(text.split("\n"), 1) if MOJIBAKE.search(line)]
+    return [
+        "line %d: %s" % (number, ascii(line.strip()[:120]))
+        for number, line in enumerate(text.split("\n"), 1)
+        if MOJIBAKE.search(line)
+    ]
 
 
 def text_files():

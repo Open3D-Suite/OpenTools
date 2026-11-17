@@ -33,16 +33,17 @@ class RenderElementsWindow(toolwindow.ToolWindow):
         super().__init__(parent)
         self.setWindowFlags(QtCore.Qt.Tool | QtCore.Qt.WindowCloseButtonHint | QtCore.Qt.WindowMaximizeButtonHint)
         self.state = None
-        self.checked = set()   # names of the ticked elements, kept across refreshes
-        self.folder = ""       # chosen by the user when the scene has no render output
+        self.checked = set()  # names of the ticked elements, kept across refreshes
+        self.folder = ""  # chosen by the user when the scene has no render output
         self.last_report = None
-        self._shown = None     # what the list shows: (engine, [(name, class)])
+        self._shown = None  # what the list shows: (engine, [(name, class)])
         self._build()
         repaired = elements_max.restore_pending()
         self.refresh()
         if repaired:
-            self.note.setText("This scene was saved in the middle of a Render Elements render. "
-                              "Its render settings were put back.")
+            self.note.setText(
+                "This scene was saved in the middle of a Render Elements render. Its render settings were put back."
+            )
 
     # ------------------------------------------------------------ layout
 
@@ -72,17 +73,21 @@ class RenderElementsWindow(toolwindow.ToolWindow):
         self.tree.itemChanged.connect(self._item_changed)
         lay.addWidget(self.tree, 1)
 
-        lay.addLayout(tables.button_row(
-            ("Fast ones", "Tick every element that renders without lighting.", self.guard(self.tick_fast)),
-            ("All", "Tick every element of this renderer.", self.guard(self.tick_all)),
-            ("None", "Untick everything.", self.guard(self.tick_none)),
-            None,
-        ))
+        lay.addLayout(
+            tables.button_row(
+                ("Fast ones", "Tick every element that renders without lighting.", self.guard(self.tick_fast)),
+                ("All", "Tick every element of this renderer.", self.guard(self.tick_all)),
+                ("None", "Untick everything.", self.guard(self.tick_none)),
+                None,
+            )
+        )
 
         mask_row = QtWidgets.QHBoxLayout()
         self.mask_check = QtWidgets.QCheckBox("Mask of the selection")
-        self.mask_check.setToolTip("Adds a white-on-black mask of the selected objects to this render only.\n"
-                                   "Object IDs, materials and the scene's render elements are not touched.")
+        self.mask_check.setToolTip(
+            "Adds a white-on-black mask of the selected objects to this render only.\n"
+            "Object IDs, materials and the scene's render elements are not touched."
+        )
         self.mask_check.toggled.connect(self._update_summary)
         mask_row.addWidget(self.mask_check)
         self.mask_name = QtWidgets.QLineEdit(str(self.options["mask_name"] or "Mask"))
@@ -138,8 +143,9 @@ class RenderElementsWindow(toolwindow.ToolWindow):
         if label:
             self.renderer_label.setText("Renderer: <b>%s</b>" % label)
         else:
-            self.renderer_label.setText("Renderer: <b>%s</b> (not supported: Corona or V-Ray)"
-                                        % st["renderer_cls"].replace("_", " "))
+            self.renderer_label.setText(
+                "Renderer: <b>%s</b> (not supported: Corona or V-Ray)" % st["renderer_cls"].replace("_", " ")
+            )
         # the list is rebuilt only when it changed: a rebuild under the mouse would swallow the click on a tick
         shown = (engine, [(e["name"], e["cls"]) for e in st["elements"]])
         if shown != self._shown:
@@ -232,8 +238,9 @@ class RenderElementsWindow(toolwindow.ToolWindow):
         st = self.state
         base = model.output_base(st["output"], st["scene_file"], self.folder)
         mask = self._mask_name() if (self.mask_check.isChecked() and st["selected"]) else ""
-        return base, model.make_plan(st["engine"], st["elements"], self.chosen(), base,
-                                     self.format_box.currentData(), mask)
+        return base, model.make_plan(
+            st["engine"], st["elements"], self.chosen(), base, self.format_box.currentData(), mask
+        )
 
     def _update_summary(self, *_args):
         if self.state is None:
@@ -254,15 +261,21 @@ class RenderElementsWindow(toolwindow.ToolWindow):
             text = "Tick the elements to render."
         elif plan["fast"]:
             text = "Fast render: the lighting is not computed. Only the %d ticked element%s are saved." % (
-                count, "" if count == 1 else "s")
+                count,
+                "" if count == 1 else "s",
+            )
         elif lit:
-            text = ("%s need%s lighting: this render takes as long as the full one. "
-                    "Only the ticked elements are saved; the main image is not." % (
-                        ", ".join(lit), "s" if len(lit) == 1 else ""))
+            text = (
+                "%s need%s lighting: this render takes as long as the full one. "
+                "Only the ticked elements are saved; the main image is not."
+                % (", ".join(lit), "s" if len(lit) == 1 else "")
+            )
         else:
-            text = ("%s cannot switch shading off: this render takes as long as the full one. "
-                    "Only the ticked elements are saved; the main image is not." % (
-                        model.ENGINE_LABELS.get(st["engine"], "This renderer")))
+            text = (
+                "%s cannot switch shading off: this render takes as long as the full one. "
+                "Only the ticked elements are saved; the main image is not."
+                % (model.ENGINE_LABELS.get(st["engine"], "This renderer"))
+            )
         self.note.setText(text)
         self.render_btn.setEnabled(bool(count) and st["engine"] is not None)
 
@@ -291,8 +304,10 @@ class RenderElementsWindow(toolwindow.ToolWindow):
             if result["not_restored"]:
                 lines.append("Could not put back: %s. Check Render Setup." % "; ".join(result["not_restored"]))
             done = [r for r in result["rows"] if r[2]]
-            lines.append("%d of %d files written in %.1f s (%s render)." % (
-                len(done), len(result["rows"]), result["seconds"], "fast" if result["fast"] else "full"))
+            lines.append(
+                "%d of %d files written in %.1f s (%s render)."
+                % (len(done), len(result["rows"]), result["seconds"], "fast" if result["fast"] else "full")
+            )
             for _name, path, written in result["rows"]:
                 lines.append("%s  %s" % ("OK      " if written else "MISSING ", path))
             if len(done) < len(result["rows"]):

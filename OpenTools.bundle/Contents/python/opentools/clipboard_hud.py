@@ -45,7 +45,7 @@ def rows(settings=None):
 
 def _short(path, limit=20):
     path = path.rstrip("\\/")
-    return path if len(path) <= limit else "..." + path[-(limit - 3):]
+    return path if len(path) <= limit else "..." + path[-(limit - 3) :]
 
 
 def _push(data):
@@ -53,10 +53,12 @@ def _push(data):
 
     mode = oc.config(_settings()).mode
     rt.OTL_ClipHUD_Mode = mode
-    rt.OTL_ClipHUD_Rows = rt.Array(*[
-        rt.Array(title, active, rt.Array(*[rt.Array(f, mb, lk) for f, mb, lk in slots]))
-        for title, active, slots in data
-    ])
+    rt.OTL_ClipHUD_Rows = rt.Array(
+        *[
+            rt.Array(title, active, rt.Array(*[rt.Array(f, mb, lk) for f, mb, lk in slots]))
+            for title, active, slots in data
+        ]
+    )
 
 
 def is_running():

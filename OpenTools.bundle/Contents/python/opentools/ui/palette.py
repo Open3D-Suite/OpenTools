@@ -60,9 +60,7 @@ class Palette(QtWidgets.QDialog):
         current = app_mod.current()
         if current is None:
             return
-        tools = search.rank(
-            self.edit.text(), current.registry.all(), recent=current.settings.get("recent")
-        )
+        tools = search.rank(self.edit.text(), current.registry.all(), recent=current.settings.get("recent"))
         for tool in tools:
             item = QtWidgets.QListWidgetItem(common.tool_icon(tool), "%s    —  %s" % (tool.name, tool.category))
             item.setData(common.TOOL_ID_ROLE, tool.id)

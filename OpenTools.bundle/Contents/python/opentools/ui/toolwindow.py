@@ -12,9 +12,9 @@ settings = app_mod.current_settings
 
 
 class ToolWindow(QtWidgets.QDialog):
-    TOOL_ID = ""          # used for the object name and the stored options
+    TOOL_ID = ""  # used for the object name and the stored options
     TITLE = ""
-    DEFAULTS = {}         # option name -> default value (bool, int, float, str; "size": [w, h])
+    DEFAULTS = {}  # option name -> default value (bool, int, float, str; "size": [w, h])
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -36,8 +36,11 @@ class ToolWindow(QtWidgets.QDialog):
     def confirm(self, title, text):
         """Yes / Cancel question (live tests replace it on the instance)."""
         answer = QtWidgets.QMessageBox.question(
-            self, "%s - %s" % (self.TITLE, title), text,
-            QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.Cancel, QtWidgets.QMessageBox.Cancel,
+            self,
+            "%s - %s" % (self.TITLE, title),
+            text,
+            QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.Cancel,
+            QtWidgets.QMessageBox.Cancel,
         )
         return answer == QtWidgets.QMessageBox.Yes
 
@@ -110,8 +113,7 @@ def guarded(title, func):
             log.get("tool").exception("%s failed", title)
             maxhost.warn(
                 "OpenTools - %s" % title,
-                "The tool stopped with an error:\n\n%s\n\nFull details in the log:\n%s"
-                % (exc, paths.log_file()),
+                "The tool stopped with an error:\n\n%s\n\nFull details in the log:\n%s" % (exc, paths.log_file()),
             )
         return None
 

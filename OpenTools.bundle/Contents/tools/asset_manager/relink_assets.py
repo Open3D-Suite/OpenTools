@@ -35,8 +35,10 @@ class ChoiceDialog(QtWidgets.QDialog):
             for path in found:
                 try:
                     stat = os.stat(path)
-                    detail = "%s · %s" % (assets.human_size(stat.st_size),
-                                          QtCore.QDateTime.fromSecsSinceEpoch(int(stat.st_mtime)).toString("yyyy-MM-dd"))
+                    detail = "%s · %s" % (
+                        assets.human_size(stat.st_size),
+                        QtCore.QDateTime.fromSecsSinceEpoch(int(stat.st_mtime)).toString("yyyy-MM-dd"),
+                    )
                 except OSError:
                     detail = "?"
                 combo.addItem("%s  (%s)" % (path, detail), path)
@@ -48,7 +50,11 @@ class ChoiceDialog(QtWidgets.QDialog):
         buttons.accepted.connect(self.accept)
         buttons.rejected.connect(self.reject)
         layout = QtWidgets.QVBoxLayout(self)
-        layout.addWidget(QtWidgets.QLabel("These files exist in more than one place with different content. Choose which one to use:"))
+        layout.addWidget(
+            QtWidgets.QLabel(
+                "These files exist in more than one place with different content. Choose which one to use:"
+            )
+        )
         layout.addWidget(table)
         layout.addWidget(buttons)
         self.resize(820, min(520, 140 + 30 * len(ambiguous)))
@@ -60,12 +66,15 @@ class ChoiceDialog(QtWidgets.QDialog):
 class RelinkAssetsWindow(assetlist.AssetListWindow):
     TOOL_ID = "asset_manager"
     TITLE = "Relink Assets"
-    DEFAULTS = dict(assetlist.LIST_DEFAULTS, **{
-        "search_folders": [],
-        "recursive": True,
-        "ignore_extension": False,
-        "size": [900, 620],
-    })
+    DEFAULTS = dict(
+        assetlist.LIST_DEFAULTS,
+        **{
+            "search_folders": [],
+            "recursive": True,
+            "ignore_extension": False,
+            "size": [900, 620],
+        },
+    )
 
     def panel(self):
         tabs = QtWidgets.QTabWidget()
@@ -98,9 +107,13 @@ class RelinkAssetsWindow(assetlist.AssetListWindow):
         run.clicked.connect(self.guard(self.relink))
         options = QtWidgets.QHBoxLayout()
         options.addWidget(self.check("recursive", "Search subfolders"))
-        options.addWidget(self.check(
-            "ignore_extension", "Ignore extension",
-            "Also accept a file with the same name and another extension (wood.jpg -> wood.png)."))
+        options.addWidget(
+            self.check(
+                "ignore_extension",
+                "Ignore extension",
+                "Also accept a file with the same name and another extension (wood.jpg -> wood.png).",
+            )
+        )
         options.addStretch(1)
         options.addWidget(run)
         layout = QtWidgets.QVBoxLayout(widget)
@@ -113,11 +126,27 @@ class RelinkAssetsWindow(assetlist.AssetListWindow):
         widget = QtWidgets.QWidget()
         layout = QtWidgets.QGridLayout(widget)
         actions = (
-            ("Strip paths of missing files", "Keep only the file name of every missing file; 3ds Max then looks for it in the map paths.", self.strip_missing),
-            ("Clear render element paths", "Empty the output path of every render element.", self.clear_render_elements),
-            ("Make relative to project", "Selected rows (or all files): paths relative to the project folder.", lambda: self.resolve("relative")),
+            (
+                "Strip paths of missing files",
+                "Keep only the file name of every missing file; 3ds Max then looks for it in the map paths.",
+                self.strip_missing,
+            ),
+            (
+                "Clear render element paths",
+                "Empty the output path of every render element.",
+                self.clear_render_elements,
+            ),
+            (
+                "Make relative to project",
+                "Selected rows (or all files): paths relative to the project folder.",
+                lambda: self.resolve("relative"),
+            ),
             ("Make absolute", "Selected rows (or all files): full paths.", lambda: self.resolve("absolute")),
-            ("Make UNC (network)", "Selected rows (or all files): mapped drives become \\\\server\\share paths.", lambda: self.resolve("unc")),
+            (
+                "Make UNC (network)",
+                "Selected rows (or all files): mapped drives become \\\\server\\share paths.",
+                lambda: self.resolve("unc"),
+            ),
         )
         for i, (text, tip, func) in enumerate(actions):
             button = QtWidgets.QPushButton(text)
@@ -130,7 +159,9 @@ class RelinkAssetsWindow(assetlist.AssetListWindow):
     # ============================================================ actions
     def _relink_one(self, asset):
         start = asset.folder if os.path.isdir(asset.folder) else (rt.maxFilePath or "")
-        path, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Relink %s" % asset.name, os.path.join(str(start), asset.name))
+        path, _ = QtWidgets.QFileDialog.getOpenFileName(
+            self, "Relink %s" % asset.name, os.path.join(str(start), asset.name)
+        )
         if path:
             with maxhost.undo("Relink file"):
                 assets.retarget({asset.path: os.path.normpath(path)})
@@ -172,9 +203,13 @@ class RelinkAssetsWindow(assetlist.AssetListWindow):
 
         try:
             with maxhost.undo("Relink Missing Files"):
-                result = assets.relink_missing(folders, recursive=self.options["recursive"],
-                                               ignore_extension=self.options["ignore_extension"],
-                                               assets=self.items, should_stop=should_stop)
+                result = assets.relink_missing(
+                    folders,
+                    recursive=self.options["recursive"],
+                    ignore_extension=self.options["ignore_extension"],
+                    assets=self.items,
+                    should_stop=should_stop,
+                )
         finally:
             progress.close()
         chosen = {}

@@ -6,6 +6,7 @@ switches, the common output) and puts every one of them back afterwards, also wh
 are changed, the record that puts them back is kept inside the scene: a scene saved in that state (an autobackup
 taken during the render, a crash) is repaired the next time the tool opens.
 """
+
 import os
 import time
 
@@ -24,6 +25,7 @@ PENDING_SLOT = 1330464769
 
 # ---------------------------------------------------------------- reading the scene
 
+
 def _mgr():
     return rt.maxOps.GetCurRenderElementMgr()
 
@@ -38,12 +40,14 @@ def elements():
     out = []
     for i in range(mgr.NumRenderElements()):
         e = mgr.GetRenderElement(i)
-        out.append({
-            "name": str(e.elementName),
-            "cls": str(rt.classOf(e)),
-            "enabled": bool(e.enabled),
-            "file": str(mgr.GetRenderElementFilename(i) or ""),
-        })
+        out.append(
+            {
+                "name": str(e.elementName),
+                "cls": str(rt.classOf(e)),
+                "enabled": bool(e.enabled),
+                "file": str(mgr.GetRenderElementFilename(i) or ""),
+            }
+        )
     return out
 
 
@@ -67,6 +71,7 @@ def scene_state():
 
 
 # ---------------------------------------------------------------- the record that puts the scene back
+
 
 def capture(renderer_props, temp):
     """The values about to be replaced. `temp`: [{"name", "cls"}] of the elements this render adds."""
@@ -225,8 +230,15 @@ def render(chosen, mask_name="", folder="", ext=""):
     plan = model.make_plan(engine, state["elements"], chosen, base, ext, mask_name if nodes else "")
     problems += plan["problems"]
     if problems:
-        return {"ok": False, "problems": problems, "fast": False, "rows": [], "seconds": 0.0, "error": "",
-                "not_restored": []}
+        return {
+            "ok": False,
+            "problems": problems,
+            "fast": False,
+            "rows": [],
+            "seconds": 0.0,
+            "error": "",
+            "not_restored": [],
+        }
 
     targets = [(state["elements"][i]["name"], plan["files"][i]) for i in sorted(plan["files"])]
     if plan["mask"]:

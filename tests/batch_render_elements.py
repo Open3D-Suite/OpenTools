@@ -7,6 +7,7 @@
 Writes %TEMP%\\OpenTools_render_elements_test\\result.txt; its last line is PASSED or FAILED.
 Not part of dev/run_tests.py (the name does not start with "test").
 """
+
 import os
 import shutil
 import sys
@@ -48,9 +49,12 @@ def pixel(path, x, y):
 def snapshot(emax):
     r = rt.renderers.current
     return {
-        "save": bool(rt.rendSaveFile), "output": str(rt.rendOutputFilename or ""), "time": int(rt.rendTimeType),
+        "save": bool(rt.rendSaveFile),
+        "output": str(rt.rendOutputFilename or ""),
+        "time": int(rt.rendTimeType),
         "active": bool(rt.maxOps.GetCurRenderElementMgr().GetElementsActive()),
-        "elements": emax.elements(), "only": bool(r.shading_onlyElements),
+        "elements": emax.elements(),
+        "only": bool(r.shading_onlyElements),
         "pending": rt.getAppData(rt.rootNode, emax.PENDING_SLOT),
     }
 
@@ -79,25 +83,30 @@ def main():
     rt.plane(pos=rt.Point3(0, 0, 0), width=400, length=400, wirecolor=rt.color(128, 128, 128), name="OTL_t_floor")
     rt.CoronaSun(pos=rt.Point3(100, -100, 200), targeted=False)
     cam = rt.freecamera(name="OTL_t_cam")
-    cam.transform = rt.matrix3(rt.Point3(1, 0, 0), rt.Point3(0, 0.5, 0.866), rt.Point3(0, -0.866, 0.5),
-                               rt.Point3(0, -160, 110))
+    cam.transform = rt.matrix3(
+        rt.Point3(1, 0, 0), rt.Point3(0, 0.5, 0.866), rt.Point3(0, -0.866, 0.5), rt.Point3(0, -160, 110)
+    )
     rt.renderWidth, rt.renderHeight = 320, 180
     rt.viewport.setCamera(cam)
     rt.renderers.current = rt.Corona()
     rt.renderers.current.progressive_passLimit = 4
     mgr = rt.maxOps.GetCurRenderElementMgr()
     mgr.RemoveAllRenderElements()
-    for cls, name in ((rt.CMasking_WireColor, "Wire"), (rt.CGeometry_ZDepth, "Z"), (rt.CESSENTIAL_Direct, "Direct"),
-                      (rt.CMasking_Cryptomatte, "Crypto")):
+    for cls, name in (
+        (rt.CMasking_WireColor, "Wire"),
+        (rt.CGeometry_ZDepth, "Z"),
+        (rt.CESSENTIAL_Direct, "Direct"),
+        (rt.CMasking_Cryptomatte, "Crypto"),
+    ):
         e = cls()
         e.elementName = name
         if name == "Z":
             e.minZ, e.maxZ = 100.0, 400.0
         mgr.AddRenderElement(e)
-    mgr.GetRenderElement(3).enabled = False          # a state worth putting back
+    mgr.GetRenderElement(3).enabled = False  # a state worth putting back
     mgr.SetRenderElementFilename(0, os.path.join(OUT, "users_own_Wire.png"))
     beauty = os.path.join(OUT, "shot.png")
-    with open(beauty, "wb") as f:                    # stands for a beauty that is already rendered
+    with open(beauty, "wb") as f:  # stands for a beauty that is already rendered
         f.write(b"the beauty")
     rt.rendSaveFile = True
     rt.rendOutputFilename = beauty
@@ -183,8 +192,11 @@ def main():
         check("7 summary says fast", w.note.text().startswith("Fast render"), w.note.text())
         w.tick_all()
         check("7 summary warns about lighting", "Direct needs lighting" in w.note.text(), w.note.text())
-        check("7 files shown next to the output", w.path_label.text() == "Files: %s" % os.path.join(OUT, "shot_<element>.png"),
-              w.path_label.text())
+        check(
+            "7 files shown next to the output",
+            w.path_label.text() == "Files: %s" % os.path.join(OUT, "shot_<element>.png"),
+            w.path_label.text(),
+        )
         w.deleteLater()
     except Exception:  # noqa: BLE001
         check("7 window", False, traceback.format_exc())

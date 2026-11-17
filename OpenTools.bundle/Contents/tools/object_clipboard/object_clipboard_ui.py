@@ -21,8 +21,13 @@ GEOMETRY_KEY = "object_clipboard_window_8"  # new key: the 8-slot window wants a
 SAVE_AS_CHOICES = (0, 2025, 2026)  # 0 = the running version
 POLL_MS = 1500
 TITLE = "Clipboard"
-COLORS = {"objects": "#2fa395", "materials": "#e08a2c", "modifiers": "#6f6fdb", "animation": "#d35f9e",
-          "locked": "#d9534f"}
+COLORS = {
+    "objects": "#2fa395",
+    "materials": "#e08a2c",
+    "modifiers": "#6f6fdb",
+    "animation": "#d35f9e",
+    "locked": "#d9534f",
+}
 
 
 _settings = app_mod.current_settings
@@ -64,8 +69,7 @@ def _swatches(colors, names, size):
     font.setPointSizeF(8.5)
     painter.setFont(font)
     text = ", ".join(names[:4]) + (" …" if len(names) > 4 else "")
-    painter.drawText(QtCore.QRectF(8, height - 38, width - 16, 32),
-                     QtCore.Qt.AlignLeft | QtCore.Qt.TextWordWrap, text)
+    painter.drawText(QtCore.QRectF(8, height - 38, width - 16, 32), QtCore.Qt.AlignLeft | QtCore.Qt.TextWordWrap, text)
     painter.end()
     return QtGui.QIcon(pixmap)
 
@@ -133,8 +137,15 @@ class SlotCard(QtWidgets.QFrame):
         try:
             state = oc.slot_state(self.slot, _settings())
         except OSError:  # network target unreachable
-            state = {"filled": False, "locked": None, "info": {}, "stamp": None, "size": 0, "thumb": None,
-                     "mode": oc.config(_settings()).mode}
+            state = {
+                "filled": False,
+                "locked": None,
+                "info": {},
+                "stamp": None,
+                "size": 0,
+                "thumb": None,
+                "mode": oc.config(_settings()).mode,
+            }
         if not force and state["stamp"] == self.stamp:
             return
         self.stamp = state["stamp"]
@@ -142,15 +153,23 @@ class SlotCard(QtWidgets.QFrame):
         mode = state["mode"]
         info = state["info"]
         locked = state["locked"]
-        self.number.setStyleSheet("background: %s; color: white; border-radius: 10px; font-weight: bold;"
-                                  % (COLORS["locked"] if locked else COLORS[mode]))
+        self.number.setStyleSheet(
+            "background: %s; color: white; border-radius: 10px; font-weight: bold;"
+            % (COLORS["locked"] if locked else COLORS[mode])
+        )
         self.lock_button.setChecked(bool(locked))
         self.lock_button.setText("🔒" if locked else "🔓")
-        self.lock_button.setToolTip("Locked by %s (%s) · click to unlock" % (locked.get("user"), locked.get("at", ""))
-                                    if locked else "Lock the slot so nobody overwrites or clears it")
+        self.lock_button.setToolTip(
+            "Locked by %s (%s) · click to unlock" % (locked.get("user"), locked.get("at", ""))
+            if locked
+            else "Lock the slot so nobody overwrites or clears it"
+        )
         self.copy_button.setEnabled(not locked)
-        what = {"materials": "materials", "modifiers": "an object with modifiers",
-                "animation": "an animated object"}.get(mode, "objects")
+        what = {
+            "materials": "materials",
+            "modifiers": "an object with modifiers",
+            "animation": "an animated object",
+        }.get(mode, "objects")
         self.copy_button.setToolTip("Store the selected %s in slot %d" % (what, self.slot))
         if not state["filled"]:
             self.caption.setText("Empty")
@@ -189,12 +208,21 @@ class SlotCard(QtWidgets.QFrame):
             extra = int(info.get("count") or 0) - len(names)
             lines.append(listed + (" … and %d more" % extra if extra > 0 else ""))
         lines.append("<i>From %s</i>" % html.escape(info.get("source_file") or "an unsaved scene"))
-        lines.append("<i>Copied %s by %s on %s · 3ds Max %s%s</i>" % (
-            html.escape(str(info.get("copied_at", "?"))), html.escape(str(info.get("author", "?"))),
-            html.escape(str(info.get("machine", "?"))), info.get("saved_as") or "?",
-            (" · %d textures" % info["textures"]) if info.get("textures") else ""))
+        lines.append(
+            "<i>Copied %s by %s on %s · 3ds Max %s%s</i>"
+            % (
+                html.escape(str(info.get("copied_at", "?"))),
+                html.escape(str(info.get("author", "?"))),
+                html.escape(str(info.get("machine", "?"))),
+                info.get("saved_as") or "?",
+                (" · %d textures" % info["textures"]) if info.get("textures") else "",
+            )
+        )
         if state["locked"]:
-            lines.append("<span style='color:%s'>Locked by %s</span>" % (COLORS["locked"], html.escape(state["locked"].get("user", "?"))))
+            lines.append(
+                "<span style='color:%s'>Locked by %s</span>"
+                % (COLORS["locked"], html.escape(state["locked"].get("user", "?")))
+            )
         lines.append("<small>Click: paste · Ctrl+click: open folder · Right-click: more</small>")
         return "<br>".join(lines)
 
@@ -289,8 +317,11 @@ class ClipboardWindow(QtWidgets.QDialog):
         self.setWindowTitle(TITLE)
         self.setWindowFlags(QtCore.Qt.Tool | QtCore.Qt.WindowCloseButtonHint)
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        theme.apply(self, extra="QFrame#OpenTools_SlotCard {{ background: {panel}; border-radius: 6px; }}"
-                    "QToolButton#OTL_Thumb {{ background: {field}; color: {dim}; }}")
+        theme.apply(
+            self,
+            extra="QFrame#OpenTools_SlotCard {{ background: {panel}; border-radius: 6px; }}"
+            "QToolButton#OTL_Thumb {{ background: {field}; color: {dim}; }}",
+        )
         self._updating = False
 
         # ---- target
@@ -316,8 +347,12 @@ class ClipboardWindow(QtWidgets.QDialog):
         self.mode_modifiers.setProperty("chip", True)
         self.mode_keys = QtWidgets.QPushButton("Keys")
         self.mode_keys.setProperty("chip", True)
-        for button, mode in ((self.mode_objects, "objects"), (self.mode_materials, "materials"),
-                             (self.mode_modifiers, "modifiers"), (self.mode_keys, "animation")):
+        for button, mode in (
+            (self.mode_objects, "objects"),
+            (self.mode_materials, "materials"),
+            (self.mode_modifiers, "modifiers"),
+            (self.mode_keys, "animation"),
+        ):
             button.setCheckable(True)
             button.setAutoExclusive(True)
             button.clicked.connect(_g(lambda _=False, m=mode: self._set_and_refresh("object_clipboard_mode", m)))
@@ -326,21 +361,27 @@ class ClipboardWindow(QtWidgets.QDialog):
         self.paste_mode = QtWidgets.QComboBox()
         for how in oc.PASTE_MODES:
             self.paste_mode.addItem("Paste " + oc.PASTE_LABELS[how].lower(), how)
-        self.paste_mode.setToolTip("How Paste places objects: in place, attached to the cursor (click to place, "
-                                   "drag to scale) or as a stamp (every click leaves an instance)")
+        self.paste_mode.setToolTip(
+            "How Paste places objects: in place, attached to the cursor (click to place, "
+            "drag to scale) or as a stamp (every click leaves an instance)"
+        )
         self.paste_mode.activated.connect(lambda _i: _set("object_clipboard_paste", self.paste_mode.currentData()))
         self.align = QtWidgets.QCheckBox("Align to surface")
         self.align.setToolTip("While placing, orient the objects to the face under the cursor")
         self.align.toggled.connect(lambda on: self._updating or _set("object_clipboard_align", on))
         # modifiers mode
         self.mod_instance = QtWidgets.QCheckBox("Paste as instances")
-        self.mod_instance.setToolTip("On: every target shares the same pasted modifiers (change one, change all). "
-                                     "Off: each target gets its own copy.")
+        self.mod_instance.setToolTip(
+            "On: every target shares the same pasted modifiers (change one, change all). "
+            "Off: each target gets its own copy."
+        )
         self.mod_instance.toggled.connect(lambda on: self._updating or _set("object_clipboard_mod_instance", on))
         # keys mode
         self.keys_relative = QtWidgets.QCheckBox("Keep each object's position at frame")
-        self.keys_relative.setToolTip("Move the pasted motion so every object is where it is now at this frame. "
-                                      "Off: objects follow the copied positions exactly.")
+        self.keys_relative.setToolTip(
+            "Move the pasted motion so every object is where it is now at this frame. "
+            "Off: objects follow the copied positions exactly."
+        )
         self.keys_relative.toggled.connect(lambda on: self._updating or _set("object_clipboard_keys_relative", on))
         self.keys_frame = QtWidgets.QSpinBox()
         self.keys_frame.setRange(-100000, 100000)
@@ -468,8 +509,11 @@ class ClipboardWindow(QtWidgets.QDialog):
         save_as, materials = cfg.save_as, cfg.materials
         self.footer.setText(
             "Folder: %s · saved for %s · same-name materials: %s · hold Shift / Ctrl / Alt on Copy/Paste to pick slots 2-8"
-            % (oc.slot_dir(1, _settings()).parent, save_as or "this 3ds Max",
-               "use scene's" if materials == "scene" else "keep both")
+            % (
+                oc.slot_dir(1, _settings()).parent,
+                save_as or "this 3ds Max",
+                "use scene's" if materials == "scene" else "keep both",
+            )
         )
 
     def _set_and_refresh(self, key, value):
@@ -531,19 +575,23 @@ class ClipboardWindow(QtWidgets.QDialog):
         menu.addSection("Textures of network pastes go to")
         menu.addAction(str(oc.maps_folder(cfg))).setEnabled(False)
         menu.addAction("Choose another folder…", _g(self._choose_maps))
-        reset_maps = menu.addAction("Back to the project's sceneassets\\images",
-                                    lambda: self._set_and_refresh("object_clipboard_maps_dir", ""))
+        reset_maps = menu.addAction(
+            "Back to the project's sceneassets\\images", lambda: self._set_and_refresh("object_clipboard_maps_dir", "")
+        )
         reset_maps.setEnabled(bool(cfg.maps_dir))
         menu.addSection("Local folder")
         menu.addAction("Open the current folder", lambda: common.open_in_explorer(cfg.root()))
         menu.addAction("Use another local folder…", _g(self._choose_folder))
-        reset = menu.addAction("Back to the default local folder",
-                               lambda: self._set_and_refresh("object_clipboard_dir", ""))
+        reset = menu.addAction(
+            "Back to the default local folder", lambda: self._set_and_refresh("object_clipboard_dir", "")
+        )
         settings = _settings()
         reset.setEnabled(bool(settings and settings.get("object_clipboard_dir")))
 
     def _choose_folder(self):
-        chosen = QtWidgets.QFileDialog.getExistingDirectory(self, "Local clipboard folder", str(oc.config(_settings()).local))
+        chosen = QtWidgets.QFileDialog.getExistingDirectory(
+            self, "Local clipboard folder", str(oc.config(_settings()).local)
+        )
         if chosen:
             self._set_and_refresh("object_clipboard_dir", chosen)
 

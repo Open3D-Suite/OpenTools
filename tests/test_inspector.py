@@ -42,7 +42,7 @@ def compound_file(streams):
         count = max(1, -(-len(data) // sector))
         start = len(data_sectors)
         padded = data + b"\x00" * (count * sector - len(data))
-        data_sectors.extend(padded[i:i + sector] for i in range(0, len(padded), sector))
+        data_sectors.extend(padded[i : i + sector] for i in range(0, len(padded), sector))
         entries.append((name, start, count, len(data)))
     dir_sector = len(data_sectors)
     fat_sector = dir_sector + 1
@@ -64,7 +64,7 @@ def compound_file(streams):
         directory += entry(name, 2, start, size)
     directory = directory.ljust(sector, b"\x00")
     header = bytearray(512)
-    header[:8] = b"\xD0\xCF\x11\xE0\xA1\xB1\x1A\xE1"
+    header[:8] = b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1"
     struct.pack_into("<HHHH", header, 24, 0x3E, 3, 0xFFFE, 9)
     struct.pack_into("<H", header, 32, 6)
     struct.pack_into("<II", header, 44, 1, dir_sector)
@@ -94,8 +94,15 @@ class CheckTableTests(unittest.TestCase):
     def test_core_has_every_check(self):
         """Each check has a c_<id> in the MAXScript core and each fix an f_<id>."""
         import os
-        core = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "OpenTools.bundle", "Contents",
-                            "tools", "scene_summary", "inspector_core.ms")
+
+        core = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            "OpenTools.bundle",
+            "Contents",
+            "tools",
+            "scene_summary",
+            "inspector_core.ms",
+        )
         with open(core, encoding="utf-8") as handle:
             source = handle.read().lower()
         for check in inspector.CHECKS:
@@ -118,8 +125,10 @@ class MalwareTests(unittest.TestCase):
     def test_signatures(self):
         self.assertIn("alc_beta", inspector.suspicious("ALC_beta"))
         # the name goes in curly quotes, written as escapes so a wrong encoding cannot garble both sides alike
-        self.assertEqual(inspector.suspicious("ALC_beta"), "known malware signature "
-                         "\N{LEFT DOUBLE QUOTATION MARK}alc_beta\N{RIGHT DOUBLE QUOTATION MARK}")
+        self.assertEqual(
+            inspector.suspicious("ALC_beta"),
+            "known malware signature \N{LEFT DOUBLE QUOTATION MARK}alc_beta\N{RIGHT DOUBLE QUOTATION MARK}",
+        )
         self.assertTrue(inspector.suspicious("Startup file", "global vrdematcleanbeta = 1"))
         self.assertTrue(inspector.suspicious("x", "fn CRP_BScript = ()"))
         self.assertEqual(inspector.suspicious("MyRigAttributes", "parameters main (x type:#float)"), "")

@@ -42,17 +42,23 @@ class DetachWindow(toolwindow.ToolWindow):
         box = QtWidgets.QVBoxLayout(options)
         box.addWidget(self.check("random_color", "Random wire colors"))
         box.addWidget(self.check("center_pivot", "Pivot at the center of each part"))
-        box.addWidget(self.check(
-            "keep_normals", "Keep smoothing along the cuts",
-            "Material ID mode: makes the normals on the split edges explicit, so the parts\n"
-            "shade exactly like the original object (no seams). Elements never share edges,\n"
-            "so this has no effect when detaching by element.",
-        ))
-        box.addWidget(self.check(
-            "trim_materials", "Trim Multi/Sub-Object materials",
-            "Each part gets only the sub-materials it uses: a single material, or a smaller\n"
-            "Multi/Sub-Object with its IDs renumbered from 1.",
-        ))
+        box.addWidget(
+            self.check(
+                "keep_normals",
+                "Keep smoothing along the cuts",
+                "Material ID mode: makes the normals on the split edges explicit, so the parts\n"
+                "shade exactly like the original object (no seams). Elements never share edges,\n"
+                "so this has no effect when detaching by element.",
+            )
+        )
+        box.addWidget(
+            self.check(
+                "trim_materials",
+                "Trim Multi/Sub-Object materials",
+                "Each part gets only the sub-materials it uses: a single material, or a smaller\n"
+                "Multi/Sub-Object with its IDs renumbered from 1.",
+            )
+        )
 
         button = QtWidgets.QPushButton("Detach selected")
         button.setMinimumHeight(30)

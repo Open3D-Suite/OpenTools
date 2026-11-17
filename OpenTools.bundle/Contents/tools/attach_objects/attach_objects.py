@@ -44,12 +44,13 @@ class AttachWindow(toolwindow.ToolWindow):
         options = QtWidgets.QGroupBox("Options")
         box = QtWidgets.QVBoxLayout(options)
         self.by_material = self.check(
-            "by_material", "One object per material",
-            "Objects sharing a material are attached together; each result is named\n"
-            "after its material.",
+            "by_material",
+            "One object per material",
+            "Objects sharing a material are attached together; each result is named\nafter its material.",
         )
         self.include_shapes = self.check(
-            "include_shapes", "Include renderable shapes",
+            "include_shapes",
+            "Include renderable shapes",
             "Splines with 'Enable In Renderer' are attached as their render mesh.",
         )
         box.addWidget(self.by_material)
@@ -109,7 +110,8 @@ class AttachWindow(toolwindow.ToolWindow):
             )
         if not used:
             message = "None of the selected objects can be attached as %s." % (
-                "splines" if o["kind"] == "spline" else "geometry")
+                "splines" if o["kind"] == "spline" else "geometry"
+            )
         else:
             message = "Attached %s into %s." % (_plural(used, "object"), _plural(len(results), "object"))
             if cancelled:

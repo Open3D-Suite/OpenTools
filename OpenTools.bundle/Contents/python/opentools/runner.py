@@ -81,8 +81,7 @@ def run(tool, reload=False):
         summary = "".join(traceback.format_exception_only(type(exc), exc)).strip()
         maxhost.warn(
             "OpenTools - %s" % tool.name,
-            "The tool stopped with an error:\n\n%s\n\nFull details in the log:\n%s"
-            % (summary, paths.log_file()),
+            "The tool stopped with an error:\n\n%s\n\nFull details in the log:\n%s" % (summary, paths.log_file()),
         )
         return False
     _log.debug("%s finished in %.2fs", tool.id, time.perf_counter() - started)
