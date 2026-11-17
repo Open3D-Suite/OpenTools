@@ -31,6 +31,8 @@ _roots = weakref.WeakSet()
 _cache = {}
 
 # Small glyphs drawn with the theme colors (stylesheets only take image files).
+# Kept out of the formatter: it would move the second line of each glyph back under the names.
+# fmt: off
 _GLYPHS = {
     "check": '<path d="M2.5 6.5 L5 9 L10 3.5" fill="none" stroke="{c}" stroke-width="1.8" '
              'stroke-linecap="round" stroke-linejoin="round"/>',
@@ -39,6 +41,7 @@ _GLYPHS = {
     "arrow_up": '<path d="M2.5 7.5 L6 4 L9.5 7.5" fill="none" stroke="{c}" stroke-width="1.6" '
                 'stroke-linecap="round" stroke-linejoin="round"/>',
 }
+# fmt: on
 
 
 def _glyph(name, color):

@@ -128,6 +128,8 @@ def pick(missing, found):
     return None, True
 
 
+# A compact table, kept out of the formatter: it would put every letter on its own line.
+# fmt: off
 _CYRILLIC = {
     "а": "a", "б": "b", "в": "v", "г": "g", "д": "d", "е": "e", "ё": "e", "ж": "zh", "з": "z",
     "и": "i", "й": "y", "к": "k", "л": "l", "м": "m", "н": "n", "о": "o", "п": "p", "р": "r",
@@ -135,6 +137,7 @@ _CYRILLIC = {
     "ъ": "", "ы": "y", "ь": "", "э": "e", "ю": "yu", "я": "ya", "і": "i", "ї": "yi", "є": "ye",
     "ґ": "g",
 }
+# fmt: on
 
 
 def transliterate(name):
