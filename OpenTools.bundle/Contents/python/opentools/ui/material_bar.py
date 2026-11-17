@@ -88,7 +88,7 @@ def _install_events(bar):
     if stale is not None:
         try:
             stale.enabled = False
-        except Exception:  # noqa: BLE001 - not a callback any more
+        except Exception:  # noqa: BLE001, S110 - not a callback any more
             pass
     rt.OTL_MaterialBarPing = _on_scene_event
     _events_cb = rt.execute(_EVENTS_MS)

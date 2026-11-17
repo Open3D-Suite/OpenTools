@@ -135,7 +135,7 @@ def stop():
             timer.stop()
     try:
         rt.unregisterRedrawViewsCallback(rt.OTL_ClipHUD_Draw)
-    except Exception:  # noqa: BLE001 - never registered
+    except Exception:  # noqa: BLE001, S110 - never registered
         pass
     rt.redrawViews()
 

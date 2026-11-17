@@ -272,12 +272,12 @@ def render(chosen, mask_name="", folder="", ext=""):
             _remove_discarded(plan["output"])
         try:
             rt.setSaveRequired(dirty)
-        except Exception:  # noqa: BLE001
+        except Exception:  # noqa: BLE001, S110 - putting the "unsaved changes" flag back is best effort
             pass
         if dialog_open:
             try:
                 rt.renderSceneDialog.open()
-            except Exception:  # noqa: BLE001
+            except Exception:  # noqa: BLE001, S110 - reopening Render Setup is best effort
                 pass
     written = {path for _name, path in targets if _stamp(path) is not None and _stamp(path) != before[path]}
     rows = model.report_rows(targets, written)

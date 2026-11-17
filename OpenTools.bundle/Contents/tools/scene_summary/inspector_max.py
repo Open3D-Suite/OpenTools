@@ -69,7 +69,7 @@ def scene_info(core=None):
             data = rt.getMaxFileVersionData(path)
             info["file"]["max_version"] = _year(data[0]) if data else None
             info["file"]["saved_as"] = _year(data[1]) if data and len(data) > 1 else None
-        except Exception:  # noqa: BLE001 - old or damaged files
+        except Exception:  # noqa: BLE001, S110 - old or damaged files
             pass
     info["file"]["dirty"] = bool(rt.getSaveRequired())
     return info

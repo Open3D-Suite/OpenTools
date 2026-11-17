@@ -459,7 +459,7 @@ def _selection_faces():
     for node in rt.getCurrentSelection():
         try:
             total += int(rt.getPolygonCount(node)[0])
-        except Exception:  # noqa: BLE001 - lights, helpers...
+        except Exception:  # noqa: BLE001, S110 - lights, helpers...
             pass
     return total
 

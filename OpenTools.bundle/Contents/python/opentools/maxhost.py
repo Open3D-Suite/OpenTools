@@ -51,12 +51,12 @@ def is_interactive():
     try:
         if runtime.maxOps.isInNonInteractiveMode():
             return False
-    except Exception:  # noqa: BLE001 - older versions
+    except Exception:  # noqa: BLE001, S110 - older versions
         pass
     try:
         if runtime.IsNetServer() or runtime.GetQuietMode():
             return False
-    except Exception:  # noqa: BLE001
+    except Exception:  # noqa: BLE001, S110 - if it cannot be asked, the session counts as interactive
         pass
     return True
 
