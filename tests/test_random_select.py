@@ -30,12 +30,12 @@ class RandomSelectTests(unittest.TestCase):
 
     def test_pick(self):
         items = list("abcdefghij")
-        chosen = picking.pick(items, 30, random.Random(4))
+        chosen = picking.pick(items, 30, random.Random(4))  # noqa: S311 - fixed seed, repeatable test
         self.assertEqual(len(chosen), 3)
         self.assertEqual(chosen, [i for i in items if i in chosen])  # original order
         self.assertEqual(picking.pick([], 50), [])
         seen = set()
-        rng = random.Random(1)
+        rng = random.Random(1)  # noqa: S311 - fixed seed, repeatable test
         for _ in range(200):
             seen.update(picking.pick(items, 10, rng))
         self.assertEqual(seen, set(items))  # every item can come up

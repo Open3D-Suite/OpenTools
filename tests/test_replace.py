@@ -17,7 +17,7 @@ class ReplaceTests(unittest.TestCase):
         self.assertEqual(replace.clean_weight(True), replace.DEFAULT_WEIGHT)
 
     def test_pick_follows_weights(self):
-        picks = replace.pick([100, 0, 300], 4000, random.Random(1))
+        picks = replace.pick([100, 0, 300], 4000, random.Random(1))  # noqa: S311 - fixed seed, repeatable test
         self.assertEqual(len(picks), 4000)
         self.assertNotIn(1, picks)  # weight 0: never
         ratio = picks.count(2) / float(picks.count(0))

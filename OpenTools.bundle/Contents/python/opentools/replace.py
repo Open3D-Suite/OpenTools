@@ -29,7 +29,7 @@ def pick(weights, count, rng=None):
     weights = [clean_weight(w) for w in weights]
     if not any(weights):
         raise ValueError("every source has weight 0")
-    rng = rng or random.Random()
+    rng = rng or random.Random()  # noqa: S311 - picks objects, not secrets
     return rng.choices(range(len(weights)), weights=weights, k=int(count))
 
 
