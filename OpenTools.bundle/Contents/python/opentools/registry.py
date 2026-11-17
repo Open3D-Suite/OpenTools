@@ -111,9 +111,9 @@ def load_manifest(folder):
     try:
         data = json.loads(manifest.read_text(encoding="utf-8-sig"))
     except OSError as exc:
-        raise ManifestError("cannot read %s: %s" % (MANIFEST_NAME, exc))
+        raise ManifestError("cannot read %s: %s" % (MANIFEST_NAME, exc)) from exc
     except ValueError as exc:
-        raise ManifestError("invalid JSON: %s" % exc)
+        raise ManifestError("invalid JSON: %s" % exc) from exc
     if not isinstance(data, dict):
         raise ManifestError("manifest must be a JSON object")
 
