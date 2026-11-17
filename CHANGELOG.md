@@ -6,6 +6,8 @@ What each version of OpenTools (formerly Open3DS) adds, newest first.
 
 - **Auditor:** the malicious-script warning shows the name of the signature in quotes instead of garbled
   characters.
+- **Clean-up.** The code now follows the format and the checks shared by every Open3D project. The tools work
+  exactly as before.
 
 ## 0.6.0 — 12 November 2026
 
