@@ -298,7 +298,7 @@ _SCAN_MS = r"""
     )
     #(result, owners)
 )
-"""
+"""  # noqa: E501 - a line of MAXScript inside the string is longer
 
 
 def scan(selected_only=False, include_xrefs=True):
