@@ -51,8 +51,6 @@ as a change that makes it old.
   version, commits `Release X.Y.Z`, packages, tags `vX.Y.Z` and prints the pushes to approve; run again
   once they are done, it makes the GitHub release as a draft. It never pushes. `--dry-run` tries it all
   and writes only to `dist/`.
-- The Open3D launcher's publishing script still makes this repo's zip its own way, from the latest
-  `vX.Y.Z` tag.
 
 ## Rules of this code
 
