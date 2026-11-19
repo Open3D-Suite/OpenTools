@@ -19,22 +19,25 @@ as a change that makes it old.
 
 ## Build and check
 
-- There is no build step. Checks, all of which must pass:
-  - `python -I dev/run_tests.py` (113 tests; they need neither 3ds Max nor Qt)
-  - `ruff format --check .` and `ruff check .`
+- No build step. `tools\check.ps1` runs every check, and all must pass; it needs Python 3.11 or newer and
+  the ruff that `ruff.toml` names. Built in: the version agrees in its four places, each `.py`, `.ms` and
+  `.ps1` has its licence line, no file holds a path of somebody's computer. Then, from `tools/repo.toml`:
+  `ruff format --check .`, `ruff check .`, `python -I dev/run_tests.py` (113 tests, without 3ds Max or Qt).
+- `-Full` adds `3dsmaxbatch tests\batch_render_elements.ms`, Render Elements with Corona on a scene of its
+  own. 3dsmaxbatch ends well even when the test fails, so the check removes the old
+  `%TEMP%\OpenTools_render_elements_test\result.txt` first and reads the verdict in its last line after.
 - `tests/test_encoding.py` fails on a text source that is not valid UTF-8 or holds broken characters.
-- `3dsmaxbatch tests\batch_render_elements.ms` tests Render Elements with Corona, apart from the checks
-  above. It resets the scene and writes `%TEMP%\OpenTools_render_elements_test\result.txt`.
-- `.editorconfig`, `.gitattributes` and `ruff.toml` are the same in every Open3D repo. Do not change them
-  here. Only the end of `ruff.toml` is this repo's, `known-first-party = ["opentools"]`: ruff does not
-  find the package inside the bundle and would sort its imports among `pymxs` and `PySide6`.
+- `.editorconfig`, `.gitattributes`, `ruff.toml`, `LICENSE`, `tools/check.ps1` and `tools/repo.py` are the
+  same in every Open3D repo; do not change them here. Only the end of `ruff.toml` is this repo's,
+  `known-first-party = ["opentools"]`: ruff does not find the package inside the bundle and would sort
+  its imports among `pymxs` and `PySide6`.
 
 ## Version and release
 
-- The version is written by hand in three places that must agree: `AppVersion` and the `ComponentEntry`
-  `Version` in `PackageContents.xml`, and `__version__` in `opentools/__init__.py`. The status line of the
-  README names it too. Nothing in this repo compares them; the launcher's publishing script checks
-  `AppVersion` alone against the tag.
+- The version is `AppVersion` in `PackageContents.xml`. The `ComponentEntry` `Version` there, `__version__`
+  in `opentools/__init__.py` and the README's status line repeat it: `tools\check.ps1` fails if one differs,
+  and `python -I tools/repo.py version set X.Y.Z` writes all four. The `0.0.0` in `dev/install_dev.ps1` is
+  the development bundle's. The launcher's publishing script checks `AppVersion` against the tag.
 - Changes a user can notice go into `CHANGELOG.md` under `## In development`, in the same commit.
 - This repo has no packager of its own. The Open3D launcher's publishing script zips `OpenTools.bundle` as
   it is in the `vX.Y.Z` tag, adds `LICENSE` to it and needs that version's section in `CHANGELOG.md`.

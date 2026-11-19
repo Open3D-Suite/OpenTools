@@ -1,0 +1,44 @@
+# What the common OPEN3D tools need to know about this repository. tools/repo.py reads it:
+# tools/check.ps1 runs the checks, and "python -I tools/repo.py version set X.Y.Z" writes a new version.
+
+# Where the version lives (`source`) and the other places that repeat it. Each one is a file and a
+# pattern whose one group is the version; "^" is the start of a line.
+[version]
+source = { file = "OpenTools.bundle/PackageContents.xml", pattern = '\bAppVersion="([^"]+)"' }
+places = [
+    { file = "OpenTools.bundle/PackageContents.xml", pattern = '<ComponentEntry [^>]*\bVersion="([^"]+)"' },
+    { file = "OpenTools.bundle/Contents/python/opentools/__init__.py", pattern = '^__version__ = "([^"]+)"' },
+    { file = "README.md", pattern = '^> Status: [^(\n]*\(v([^)]+)\)' },
+]
+
+# The checks, in the order they run. `full = true` marks the ones that only tools/check.ps1 -Full runs.
+[[check]]
+name = "ruff format"
+run = ["ruff", "format", "--check", "."]
+
+[[check]]
+name = "ruff check"
+run = ["ruff", "check", "."]
+
+# The offline tests: they need neither 3ds Max nor Qt.
+[[check]]
+name = "tests"
+run = ["python", "dev/run_tests.py"]
+
+# Render Elements with Corona in a 3ds Max without an interface, on a scene of its own. 3dsmaxbatch ends
+# well even when the test fails: the verdict is the last line of the result file it writes in %TEMP%.
+# So the result of an earlier run is removed first, and read afterwards.
+[[check]]
+name = "render elements: clear the last result"
+run = ["python", "-c", 'import pathlib, tempfile; pathlib.Path(tempfile.gettempdir(), "OpenTools_render_elements_test", "result.txt").unlink(missing_ok=True)']
+full = true
+
+[[check]]
+name = "render elements in 3dsmaxbatch"
+run = ["3dsmaxbatch", "tests/batch_render_elements.ms"]
+full = true
+
+[[check]]
+name = "render elements: result"
+run = ["python", "-c", 'import pathlib, sys, tempfile; p = pathlib.Path(tempfile.gettempdir(), "OpenTools_render_elements_test", "result.txt"); t = p.read_text(encoding="utf-8") if p.is_file() else "no result was written\n"; print(t, end=""); sys.exit(t.splitlines()[-1:] != ["PASSED"])']
+full = true

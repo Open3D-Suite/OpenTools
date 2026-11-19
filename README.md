@@ -65,6 +65,7 @@ OpenTools.bundle/                Autodesk ApplicationPlugins package (what users
 dev/                             Developer scripts (dev install, bridge client, test runner)
 tests/                           Offline tests that run without 3ds Max (test_*.py), plus
                                  batch_*.ms checks that run in 3dsmaxbatch
+tools/                           check.ps1 runs every check; repo.toml lists this repo's
 ```
 
 ## Adding a tool
@@ -104,7 +105,8 @@ GPL-compatible license. `license` states the tool's license.
 
 ## Development
 
-Requirements: 3ds Max 2025+ on Windows. The Python bundled with 3ds Max is enough.
+Requirements: 3ds Max 2025+ on Windows. The checks also need Python 3.11 or newer and the ruff version
+that `ruff.toml` names.
 
 ```powershell
 # Load OpenTools straight from this checkout (instead of a copied bundle) and enable the dev bridge.
@@ -112,12 +114,11 @@ Requirements: 3ds Max 2025+ on Windows. The Python bundled with 3ds Max is enoug
 # Remove it again with dev\uninstall_dev.ps1. Restart 3ds Max after either.
 powershell -ExecutionPolicy Bypass -File dev\install_dev.ps1
 
-# Run the offline tests
-& "C:\Program Files\Autodesk\3ds Max 2027\Python\python.exe" -I dev\run_tests.py
+# Every check: version, licence lines, ruff and the offline tests
+powershell -ExecutionPolicy Bypass -File tools\check.ps1
 
-# Render Elements with Corona in a headless 3ds Max (resets the scene: never in a Max with work open);
-# the result is in %TEMP%\OpenTools_render_elements_test\result.txt
-& "C:\Program Files\Autodesk\3ds Max 2027\3dsmaxbatch.exe" tests\batch_render_elements.ms
+# Also Render Elements with Corona in a headless 3ds Max (3dsmaxbatch, on a scene of its own)
+powershell -ExecutionPolicy Bypass -File tools\check.ps1 -Full
 
 # Talk to the running 3ds Max (needs the dev install)
 & "C:\Program Files\Autodesk\3ds Max 2027\Python\python.exe" -I dev\bridge.py ping
