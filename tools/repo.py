@@ -150,8 +150,9 @@ def call(args, **options):
 def part(name):
     """Another file of the common tool beside this one, such as repo_package, loaded once.
 
-    python -I keeps this folder off sys.path, so the file is loaded by its place. It finds this file
-    as sys.modules["open3d_repo"].
+    python -I keeps this folder off sys.path, so the file is loaded by its place, and Python is told
+    not to leave a tools/__pycache__ behind in the repository. It finds this file as
+    sys.modules["open3d_repo"].
     """
     sys.modules.setdefault("open3d_repo", sys.modules[__name__])
     key = "open3d_" + name
@@ -162,7 +163,11 @@ def part(name):
         spec = importlib.util.spec_from_file_location(key, path)
         module = importlib.util.module_from_spec(spec)
         sys.modules[key] = module
-        spec.loader.exec_module(module)
+        writes, sys.dont_write_bytecode = sys.dont_write_bytecode, True
+        try:
+            spec.loader.exec_module(module)
+        finally:
+            sys.dont_write_bytecode = writes
     return sys.modules[key]
 
 
