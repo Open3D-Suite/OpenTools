@@ -197,6 +197,7 @@ def cargo_environment(target):
     trims = " ".join("'/d1trimfile:%s\\'" % folder for folder in dict.fromkeys([home, short_path(home), str(target)]))
     env["CFLAGS"] = (env.get("CFLAGS", "") + " " + trims).strip()
     env["CC_SHELL_ESCAPED_FLAGS"] = "1"
+    env["CARGO_TARGET_DIR"] = str(target)
     return env
 
 
@@ -310,7 +311,7 @@ def gather(folder, package, known, target):
 def this_computer(folder, target, also=()):
     """The folders of this computer a package must never name, in each spelling Windows has for them."""
     home = str(Path.home())
-    folders = [home, short_path(home), cargo_home(), short_path(cargo_home()), *also]
+    folders = [home, short_path(home), cargo_home(), short_path(cargo_home())]
     for place in (folder, *also):
         folders += [os.path.abspath(place), str(Path(place).resolve())]
     if target:
@@ -423,12 +424,13 @@ def write_whole(path, write):
 # --------------------------------------------------------------------------------- the package
 
 
-def make_package(folder, settings, checked=False, files=None, out=None, also=()):
+def make_package(folder, settings, checked=False, files=None, out=None, also=(), target=None):
     """Makes the package of the repository in `folder` and returns its zip.
 
     `files` is what Git tracks or would track there (Git is asked when it is not given), `out` the
-    folder the zip goes into (the repository's dist/ when not given) and `also` other folders of this
-    computer that the package must not name.
+    folder the zip goes into (the repository's dist/ when not given), `also` other folders of this
+    computer that the package must not name, and `target` the folder cargo builds in (cargo says
+    which when it is not given).
     """
     package = table(settings)
     version = ready_version(folder, settings)
@@ -437,7 +439,7 @@ def make_package(folder, settings, checked=False, files=None, out=None, also=())
         fail("the checks failed: put them right first (tools\\check.ps1 shows them again)")
     known = repo.repo_files(folder) if files is None else files
 
-    found = []
+    found = [Path(target)] if target else []
 
     def target():
         if not found:
@@ -469,8 +471,8 @@ def make_package(folder, settings, checked=False, files=None, out=None, also=())
     write_whole(archive, lambda path: write_zip(path, contents))
     digest = hashlib.sha256(archive.read_bytes()).hexdigest()
     write_whole(dist / SUMS, lambda path: path.write_bytes(f"{digest}  {name}\n".encode()))
-    shown = archive.relative_to(folder) if archive.is_relative_to(folder) else archive
-    repo.say(f"Wrote {shown.as_posix()} ({archive.stat().st_size / 1e6:.1f} MB) and {SUMS}\n  sha256 {digest}")
+    size = archive.stat().st_size / 1e6
+    repo.say(f"Wrote {dist.name}/{name} ({size:.1f} MB) and {dist.name}/{SUMS}\n  sha256 {digest}")
     return archive
 
 

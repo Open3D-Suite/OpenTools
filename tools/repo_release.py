@@ -182,10 +182,13 @@ def commit_release(folder, version):
 
 def package_in_a_copy(folder, settings, version, today):
     """The dry run of the commit: the release's version and CHANGELOG in a copy of the repository, inside
-    dist/, and the package of that copy, which stays in dist/. The checks run on the repository itself."""
+    dist/, and the package of that copy, which stays in dist/. The checks run on the repository itself,
+    and cargo builds the copy where it builds the repository, so it does not start from nothing."""
     files = repo.repo_files(folder)
     if repo.check(folder, settings, full=False) != 0:
         fail("the checks failed: put them right first (tools\\check.ps1 shows them again)")
+    cargo = any(args[0] == "cargo" for args in packager.table(settings).get("build", []))
+    target = packager.cargo_target(folder) if cargo else None
     dist = folder / packager.DIST
     dist.mkdir(exist_ok=True)
     copy = Path(tempfile.mkdtemp(prefix=f"release-{version}-", dir=dist))
@@ -195,7 +198,7 @@ def package_in_a_copy(folder, settings, version, today):
             shutil.copyfile(folder / name, copy / name)
         repo.say(f"  [dry run] what the commit would change, in a copy: {copy.relative_to(folder).as_posix()}")
         write_release(copy, settings, version, today)
-        return packager.make_package(copy, settings, checked=True, files=files, out=dist, also=[folder])
+        return packager.make_package(copy, settings, checked=True, files=files, out=dist, also=[folder], target=target)
     finally:
         shutil.rmtree(copy, ignore_errors=True)
 
