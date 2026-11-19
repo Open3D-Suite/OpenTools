@@ -1,5 +1,6 @@
 # What the common OPEN3D tools need to know about this repository. tools/repo.py reads it:
-# tools/check.ps1 runs the checks, and "python -I tools/repo.py version set X.Y.Z" writes a new version.
+# tools/check.ps1 runs the checks, "python -I tools/repo.py version set X.Y.Z" writes a new version,
+# "python -I tools/repo.py package" makes the release package and "release X.Y.Z" the release.
 
 # Where the version lives (`source`) and the other places that repeat it. Each one is a file and a
 # pattern whose one group is the version; "^" is the start of a line.
@@ -42,3 +43,11 @@ full = true
 name = "render elements: result"
 run = ["python", "-c", 'import pathlib, sys, tempfile; p = pathlib.Path(tempfile.gettempdir(), "OpenTools_render_elements_test", "result.txt"); t = p.read_text(encoding="utf-8") if p.is_file() else "no result was written\n"; print(t, end=""); sys.exit(t.splitlines()[-1:] != ["PASSED"])']
 full = true
+
+# The release package: dist/opentools-<version>-windows-x64-3dsmax.zip, with OpenTools.bundle at its root
+# and LICENSE inside it, and dist/SHA256SUMS.txt. The launcher installs it from there. Nothing is built:
+# the bundle goes in as Git has it.
+[package]
+name = "OpenTools"
+bundle = "OpenTools.bundle"
+files = ["OpenTools.bundle"]

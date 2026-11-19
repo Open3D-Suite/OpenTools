@@ -27,8 +27,9 @@ as a change that makes it old.
   own. 3dsmaxbatch ends well even when the test fails, so the check removes the old
   `%TEMP%\OpenTools_render_elements_test\result.txt` first and reads the verdict in its last line after.
 - `tests/test_encoding.py` fails on a text source that is not valid UTF-8 or holds broken characters.
-- `.editorconfig`, `.gitattributes`, `ruff.toml`, `LICENSE`, `tools/check.ps1` and `tools/repo.py` are the
-  same in every Open3D repo; do not change them here. Only the end of `ruff.toml` is this repo's,
+- `.editorconfig`, `.gitattributes`, `ruff.toml`, `LICENSE`, `tools/check.ps1`, `tools/repo.py`,
+  `tools/repo_package.py` and `tools/repo_release.py` are the same in every Open3D repo; do not change them
+  here. Only the end of `ruff.toml` is this repo's,
   `known-first-party = ["opentools"]`: ruff does not find the package inside the bundle and would sort
   its imports among `pymxs` and `PySide6`.
 
@@ -37,10 +38,19 @@ as a change that makes it old.
 - The version is `AppVersion` in `PackageContents.xml`. The `ComponentEntry` `Version` there, `__version__`
   in `opentools/__init__.py` and the README's status line repeat it: `tools\check.ps1` fails if one differs,
   and `python -I tools/repo.py version set X.Y.Z` writes all four. The `0.0.0` in `dev/install_dev.ps1` is
-  the development bundle's. The launcher's publishing script checks `AppVersion` against the tag.
+  the development bundle's.
 - Changes a user can notice go into `CHANGELOG.md` under `## In development`, in the same commit.
-- This repo has no packager of its own. The Open3D launcher's publishing script zips `OpenTools.bundle` as
-  it is in the `vX.Y.Z` tag, adds `LICENSE` to it and needs that version's section in `CHANGELOG.md`.
+- `python -I tools/repo.py package` makes the release package as the `[package]` table of
+  `tools/repo.toml` says: it needs the version's `## X.Y.Z` section in `CHANGELOG.md`, runs the quick
+  checks and writes `dist/opentools-<version>-windows-x64-3dsmax.zip`, with the files Git has in
+  `OpenTools.bundle/` at its root (never `__pycache__`) and `LICENSE` inside the bundle, and
+  `dist/SHA256SUMS.txt`. It refuses a bundle whose `AppVersion` is not the version. Nothing is built.
+- `python -I tools/repo.py release X.Y.Z` turns `## In development` into `## X.Y.Z — <date>`, sets the
+  version, commits `Release X.Y.Z`, packages, tags `vX.Y.Z` and prints the pushes to approve; run again
+  once they are done, it makes the GitHub release as a draft. It never pushes. `--dry-run` tries it all
+  and writes only to `dist/`.
+- The Open3D launcher's publishing script still makes this repo's zip its own way, from the latest
+  `vX.Y.Z` tag.
 
 ## Rules of this code
 
