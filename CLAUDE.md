@@ -26,6 +26,8 @@ as a change that makes it old.
 - `-Full` adds `3dsmaxbatch tests\batch_render_elements.ms`, Render Elements with Corona on a scene of its
   own. 3dsmaxbatch ends well even when the test fails, so the check removes the old
   `%TEMP%\OpenTools_render_elements_test\result.txt` first and reads the verdict in its last line after.
+- CI: `.github/workflows/check.yml` runs `tools\check.ps1`, without `-Full`, on every push and pull request
+  to `main`, on GitHub's Windows runner, once with Python 3.11 and once with 3.13.
 - `tests/test_encoding.py` fails on a text source that is not valid UTF-8 or holds broken characters.
 - `.editorconfig`, `.gitattributes`, `ruff.toml`, `LICENSE`, `tools/check.ps1`, `tools/repo.py`,
   `tools/repo_package.py` and `tools/repo_release.py` are the same in every Open3D repo; do not change them
