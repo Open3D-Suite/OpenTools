@@ -2,6 +2,7 @@
 """Startup, shutdown and live reload of OpenTools inside 3ds Max."""
 
 import sys
+from pathlib import Path
 
 from . import __version__, log
 
@@ -26,8 +27,12 @@ def start(dev_root=None):
         _log.info("Already started.")
         return existing
 
+    # Before anything reads the settings or opens the log: the folders of an OpenTools from before
+    # are copied into the new ones, once (paths.carry_over).
+    carried = _carry_over()
     log.setup(dev=bool(dev_root))
     _log.info("OpenTools %s starting%s.", __version__, " (dev)" if dev_root else "")
+    _report_carry_over(carried)
 
     app = app_mod.App(dev_root=dev_root)
     app_mod.set_current(app)
@@ -63,6 +68,32 @@ def start(dev_root=None):
         )
     _log.info("OpenTools ready: %d tools.", len(app.registry.tools))
     return app
+
+
+def _carry_over():
+    """paths.carry_over, which must never stop the start: what it did, or the exception it raised."""
+    from . import paths
+
+    try:
+        return paths.carry_over()
+    except Exception as exc:  # noqa: BLE001 - the start goes on with the folders as they are
+        return exc
+
+
+def _report_carry_over(carried):
+    """Logs what carrying the old folders over did."""
+    from . import open3d_settings
+
+    if isinstance(carried, Exception):
+        _log.error("Copying the old folders to the new ones failed: %r", carried)
+        return
+    for old, new, outcome in carried:
+        if outcome.kind == open3d_settings.COPIED:
+            _log.info("Copied %d file(s) from %s to %s; the old folder is left as it was.", outcome.files, old, new)
+        elif outcome.kind == open3d_settings.FAILED:
+            _log.error("Could not copy %s to %s (%s); this session uses %s.", old, new, outcome.reason, old)
+        for path, why in outcome.left_out:
+            _log.warning("Not copied to %s: %s (%s)", new, Path(old) / path, why)
 
 
 def _start_bridge(folder, poll_ms):

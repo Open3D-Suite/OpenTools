@@ -8,8 +8,8 @@ macros you can bind to hotkeys.
 - 3ds Max 2025 and later (Python 3 / PySide6 + MAXScript, no compiled plugins)
 - Every tool is a folder with a small `tool.json` manifest; the hub builds itself from them
 - Tools load lazily and run isolated: one broken tool never takes the others down
-- Settings live in `%APPDATA%\OpenTools` (clipboard slots in `%LOCALAPPDATA%\OpenTools`), so they
-  survive 3ds Max upgrades
+- Settings live in `%APPDATA%\Open3D\OpenTools` (clipboard slots in `%LOCALAPPDATA%\Open3D\OpenTools`),
+  so they survive 3ds Max upgrades
 
 OpenTools is part of [Open3D](https://github.com/carlesllavata/Open3D), a suite of open-source tools for
 3D work. It was called **Open3DS** until version 0.5.0.
@@ -50,8 +50,10 @@ OpenTools is part of [Open3D](https://github.com/carlesllavata/Open3D), a suite 
    `OpenTools Command Palette` (for example to `Ctrl+Space`) and any tool you use often.
 
 To uninstall, choose **Uninstall…** in OpenTools' menu in the launcher, or delete the `OpenTools.bundle` folder
-with 3ds Max closed. Your settings stay in `%APPDATA%\OpenTools` and
-`%LOCALAPPDATA%\OpenTools`; delete those too for a clean removal.
+with 3ds Max closed. Your settings stay in `%APPDATA%\Open3D\OpenTools` and
+`%LOCALAPPDATA%\Open3D\OpenTools`; delete those too for a clean removal. Version 0.6.0 and earlier kept
+them in `%APPDATA%\OpenTools` and `%LOCALAPPDATA%\OpenTools`: the first start of a newer version copies
+them to the new folders and leaves the old ones as they were, so those can go too.
 
 ## Layout
 

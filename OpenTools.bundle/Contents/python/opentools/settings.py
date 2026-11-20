@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""User settings stored as JSON in %APPDATA%\\OpenTools\\settings.json."""
+"""User settings stored as JSON in %APPDATA%\\Open3D\\OpenTools\\settings.json (paths.config_dir)."""
 
 import copy
 import json
@@ -38,7 +38,7 @@ DEFAULTS = {
     # Last position of each tool window: {tool_id: [x, y]}.
     "tool_windows": {},
     "devbridge_poll_ms": 500,
-    # Local folder of the object clipboard ("" = %LOCALAPPDATA%\OpenTools\clipboard).
+    # Local folder of the object clipboard ("" = %LOCALAPPDATA%\Open3D\OpenTools\clipboard).
     "object_clipboard_dir": "",
     # "local" or "remote" (the active network target), the network targets, the
     # active one, mode (objects, materials, modifiers, animation), how Paste places objects (in_place, cursor,

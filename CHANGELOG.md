@@ -4,6 +4,13 @@ What each version of OpenTools (formerly Open3DS) adds, newest first.
 
 ## In development
 
+- **Your settings and clipboard move to the Open3D folders,** with the other Open3D apps: settings to
+  `%APPDATA%\Open3D\OpenTools`, the log, the clipboard slots and the rest to `%LOCALAPPDATA%\Open3D\OpenTools`.
+  The first time 3ds Max starts with this version, OpenTools copies everything it finds in the old folders,
+  `%APPDATA%\OpenTools` and `%LOCALAPPDATA%\OpenTools`, so your favourites, tool options, panel layout and
+  clipboard slots are all there and nothing has to be set up again. The old folders are left as they were.
+  If you set `OPENTOOLS_CONFIG_DIR` or `OPENTOOLS_DATA_DIR`, those folders are still used and nothing is
+  copied for them.
 - **Auditor:** the malicious-script warning shows the name of the signature in quotes instead of garbled
   characters.
 - **Clean-up.** The code now follows the format and the checks shared by every Open3D project. The tools work

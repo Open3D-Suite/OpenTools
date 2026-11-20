@@ -13,6 +13,8 @@ as a change that makes it old.
   `runner.py` runs one, `macros.py` and `menus.py` give each its macro and its menu entry, `maxhost.py` is
   a thin layer over 3ds Max. `ui/` is the Qt side: `hub.py` is the panel, `toolwindow.py` the base of the
   tool windows, `theme.py` the look, built from 3ds Max's own palette.
+- `paths.py`: where OpenTools keeps its files, and carrying its old folders over. `open3d_settings.py`: what
+  every Open3D app shares (the language and the folders), a copy of a common file.
 - `Contents/tools/<id>/`: one folder per tool, with its `tool.json`, its code and its `icon.svg`.
 - `dev/install_dev.ps1` installs a small bundle that loads this checkout and switches on the dev bridge;
   `dev/bridge.py` then runs Python inside the running 3ds Max.
@@ -22,7 +24,7 @@ as a change that makes it old.
 - No build step. `tools\check.ps1` runs every check, and all must pass; it needs Python 3.11 or newer and
   the ruff that `ruff.toml` names. Built in: the version agrees in its four places, each `.py`, `.ms` and
   `.ps1` has its licence line, no file holds a path of somebody's computer. Then, from `tools/repo.toml`:
-  `ruff format --check .`, `ruff check .`, `python -I dev/run_tests.py` (113 tests, without 3ds Max or Qt).
+  `ruff format --check .`, `ruff check .`, `python -I dev/run_tests.py` (122 tests, without 3ds Max or Qt).
 - `-Full` adds `3dsmaxbatch tests\batch_render_elements.ms`, Render Elements with Corona on a scene of its
   own. 3dsmaxbatch ends well even when the test fails, so the check removes the old
   `%TEMP%\OpenTools_render_elements_test\result.txt` first and reads the verdict in its last line after.
@@ -30,8 +32,8 @@ as a change that makes it old.
   to `main`, on GitHub's Windows runner, once with Python 3.11 and once with 3.13.
 - `tests/test_encoding.py` fails on a text source that is not valid UTF-8 or holds broken characters.
 - `.editorconfig`, `.gitattributes`, `ruff.toml`, `LICENSE`, `tools/check.ps1`, `tools/repo.py`,
-  `tools/repo_package.py` and `tools/repo_release.py` are the same in every Open3D repo; do not change them
-  here. Only the end of `ruff.toml` is this repo's,
+  `tools/repo_package.py` and `tools/repo_release.py` are the same in every Open3D repo, and
+  `opentools/open3d_settings.py` in every repo that has it; do not change them here. Only the end of `ruff.toml` is this repo's,
   `known-first-party = ["opentools"]`: ruff does not find the package inside the bundle and would sort
   its imports among `pymxs` and `PySide6`.
 
@@ -63,6 +65,13 @@ as a change that makes it old.
   renamed: `scene_summary` is the Auditor, `ignite` is Random Replace, `asset_manager` is Relink Assets.
 - Tool windows derive from `ToolWindow`, all but the Clipboard's: `self.guard(func)` wraps an action so
   an error is logged and shown, and `self.confirm(...)` asks Yes or Cancel.
+- Its files (`paths.py`): settings in `%APPDATA%\Open3D\OpenTools`, the log, the clipboard slots, the
+  theme's glyphs and pasted maps in `%LOCALAPPDATA%\Open3D\OpenTools`; `OPEN3D_SETTINGS_DIR` and
+  `OPEN3D_DATA_DIR` move them, and `OPENTOOLS_CONFIG_DIR` and `OPENTOOLS_DATA_DIR` win over both. At the
+  start of `bootstrap.start`, before the log opens and the settings are read, `paths.carry_over` copies the
+  old `%APPDATA%\OpenTools` and `%LOCALAPPDATA%\OpenTools` into them once (not for a folder an
+  `OPENTOOLS_*` variable names) and leaves them as they were; the log says what was copied. If a copy
+  fails, that session uses the old folder and the next start tries again. It runs in `3dsmaxbatch` too.
 - MAXScript files: 4 spaces, LF, plain ASCII without a BOM. Globals and structs start with `OTL_`.
 - The interface is in English only: its texts are written straight in the code.
 
