@@ -32,7 +32,7 @@ as a change that makes it old.
   to `main`, on GitHub's Windows runner, once with Python 3.11 and once with 3.13.
 - `tests/test_encoding.py` fails on a text source that is not valid UTF-8 or holds broken characters.
 - `.editorconfig`, `.gitattributes`, `ruff.toml`, `LICENSE`, `tools/check.ps1`, `tools/repo.py`,
-  `tools/repo_package.py` and `tools/repo_release.py` are the same in every Open3D repo, and
+  `tools/repo_package.py`, `tools/repo_release.py` and `tools/repo_msi.py` are the same in every Open3D repo, and
   `opentools/open3d_settings.py` in every repo that has it; do not change them here. Only the end of `ruff.toml` is this repo's,
   `known-first-party = ["opentools"]`: ruff does not find the package inside the bundle and would sort
   its imports among `pymxs` and `PySide6`.
