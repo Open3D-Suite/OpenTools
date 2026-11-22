@@ -5,7 +5,8 @@ When a new 3ds Max version comes out, you reinstall a single package and every
 tool is back: in a dockable panel, in a searchable command palette, and as
 macros you can bind to hotkeys.
 
-- 3ds Max 2025 and later (Python 3 / PySide6 + MAXScript, no compiled plugins)
+- 3ds Max 2025 and later (Python 3 / PySide6 + MAXScript, no compiled plugins): tested on 3ds Max 2027;
+  2025 and 2026 should work, but are not tested
 - Every tool is a folder with a small `tool.json` manifest; the hub builds itself from them
 - Tools load lazily and run isolated: one broken tool never takes the others down
 - Settings live in `%APPDATA%\Open3D\OpenTools` (clipboard slots in `%LOCALAPPDATA%\Open3D\OpenTools`),
