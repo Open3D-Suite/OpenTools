@@ -56,6 +56,8 @@ as a change that makes it old.
 
 ## Rules of this code
 
+- A bug that is fixed comes with a test that fails without the fix, and new logic comes with its tests. The
+  interface is tried by hand in 3ds Max before a release.
 - The code runs inside 3ds Max's own Python: 3.11 in 3ds Max 2025, the oldest the bundle accepts
   (`SeriesMin` 2025, `SeriesMax` 2099). `pymxs` and `qtmax` exist only inside 3ds Max; PySide6 comes with it.
 - In `opentools/`, only `ui/` and `devbridge.py` import them at module level; the other modules import
