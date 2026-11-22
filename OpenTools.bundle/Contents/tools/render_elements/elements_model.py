@@ -238,6 +238,31 @@ def lit_names(engine, elements, chosen):
     return [elements[i]["name"] for i in sorted(set(chosen)) if kind_of(engine, elements[i]["cls"]) == LIT]
 
 
+def summary_note(engine, count, fast, lit, needs_selection=False):
+    """The note under the list: what the next render does. `count`: the files it saves (the ticked elements and the
+    mask); `lit`: the names of the ticked elements that need lighting; `needs_selection`: the mask is ticked and
+    nothing is selected."""
+    if needs_selection:
+        return "Select the objects of the mask in the scene."
+    if not count:
+        return "Tick the elements to render."
+    if fast:
+        return "Fast render: the lighting is not computed. Only the %d ticked %s saved." % (
+            count,
+            "element is" if count == 1 else "elements are",
+        )
+    if lit:
+        return (
+            "%s need%s lighting: this render takes as long as the full one. "
+            "Only the ticked elements are saved; the main image is not."
+            % (", ".join(lit), "s" if len(lit) == 1 else "")
+        )
+    return (
+        "%s cannot switch shading off: this render takes as long as the full one. "
+        "Only the ticked elements are saved; the main image is not." % ENGINE_LABELS.get(engine, "This renderer")
+    )
+
+
 # ---------------------------------------------------------------- the record that puts the scene back
 
 RECORD_VERSION = 1

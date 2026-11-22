@@ -24,7 +24,7 @@ as a change that makes it old.
 - No build step. `tools\check.ps1` runs every check, and all must pass; it needs Python 3.11 or newer and
   the ruff that `ruff.toml` names. Built in: the version agrees in its four places, each `.py`, `.ms` and
   `.ps1` has its licence line, no file holds a path of somebody's computer. Then, from `tools/repo.toml`:
-  `ruff format --check .`, `ruff check .`, `python -I dev/run_tests.py` (122 tests, without 3ds Max or Qt).
+  `ruff format --check .`, `ruff check .`, `python -I dev/run_tests.py` (124 tests, without 3ds Max or Qt).
 - `-Full` adds `3dsmaxbatch tests\batch_render_elements.ms`, Render Elements with Corona on a scene of its
   own. 3dsmaxbatch ends well even when the test fails, so the check removes the old
   `%TEMP%\OpenTools_render_elements_test\result.txt` first and reads the verdict in its last line after.

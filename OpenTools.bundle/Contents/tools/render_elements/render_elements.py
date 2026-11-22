@@ -256,28 +256,8 @@ class RenderElementsWindow(toolwindow.ToolWindow):
         chosen = self.chosen()
         count = len(chosen) + (1 if plan["mask"] else 0)
         lit = model.lit_names(st["engine"], st["elements"], chosen)
-        if self.mask_check.isChecked() and not st["selected"]:
-            text = "Select the objects of the mask in the scene."
-        elif not count:
-            text = "Tick the elements to render."
-        elif plan["fast"]:
-            text = "Fast render: the lighting is not computed. Only the %d ticked element%s are saved." % (
-                count,
-                "" if count == 1 else "s",
-            )
-        elif lit:
-            text = (
-                "%s need%s lighting: this render takes as long as the full one. "
-                "Only the ticked elements are saved; the main image is not."
-                % (", ".join(lit), "s" if len(lit) == 1 else "")
-            )
-        else:
-            text = (
-                "%s cannot switch shading off: this render takes as long as the full one. "
-                "Only the ticked elements are saved; the main image is not."
-                % (model.ENGINE_LABELS.get(st["engine"], "This renderer"))
-            )
-        self.note.setText(text)
+        needs_selection = self.mask_check.isChecked() and not st["selected"]
+        self.note.setText(model.summary_note(st["engine"], count, plan["fast"], lit, needs_selection))
         self.render_btn.setEnabled(bool(count) and st["engine"] is not None)
 
     # ------------------------------------------------------------ render

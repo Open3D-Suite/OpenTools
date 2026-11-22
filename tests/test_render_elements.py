@@ -175,5 +175,29 @@ class Report(unittest.TestCase):
         self.assertEqual(rows, [("Wire", "a.exr", True), ("Z", "b.exr", False)])
 
 
+class Note(unittest.TestCase):
+    def test_fast_render_verb_agrees(self):
+        self.assertEqual(
+            model.summary_note(model.CORONA, 1, True, []),
+            "Fast render: the lighting is not computed. Only the 1 ticked element is saved.",
+        )
+        self.assertEqual(
+            model.summary_note(model.CORONA, 3, True, []),
+            "Fast render: the lighting is not computed. Only the 3 ticked elements are saved.",
+        )
+
+    def test_other_notes(self):
+        self.assertEqual(
+            model.summary_note(model.CORONA, 1, True, [], needs_selection=True),
+            "Select the objects of the mask in the scene.",
+        )
+        self.assertEqual(model.summary_note(model.CORONA, 0, False, []), "Tick the elements to render.")
+        self.assertTrue(model.summary_note(model.CORONA, 1, False, ["Refl"]).startswith("Refl needs lighting:"))
+        self.assertTrue(
+            model.summary_note(model.CORONA, 2, False, ["Refl", "GI"]).startswith("Refl, GI need lighting:")
+        )
+        self.assertTrue(model.summary_note(model.VRAY_GPU, 1, False, []).startswith("V-Ray GPU cannot switch shading"))
+
+
 if __name__ == "__main__":
     unittest.main()

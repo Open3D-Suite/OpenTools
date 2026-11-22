@@ -2,6 +2,11 @@
 
 What each version of OpenTools (formerly Open3DS) adds, newest first.
 
+## In development
+
+- **Render Elements:** with one element ticked, the note under the list reads "Only the 1 ticked element is
+  saved" instead of "are saved".
+
 ## 0.7.0 — 22 November 2026
 
 - **Your settings and clipboard move to the Open3D folders,** with the other Open3D apps: settings to
