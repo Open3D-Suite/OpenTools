@@ -12,7 +12,7 @@ macros you can bind to hotkeys.
 - Settings live in `%APPDATA%\Open3D\OpenTools` (clipboard slots in `%LOCALAPPDATA%\Open3D\OpenTools`),
   so they survive 3ds Max upgrades
 
-OpenTools is part of [Open3D](https://github.com/Open3D-Suite/Open3D), a suite of open-source tools for
+OpenTools is part of [Open3D](https://github.com/Open3D-Suite/Open3D-Launcher), a suite of open-source tools for
 3D work. It was called **Open3DS** until version 0.5.0.
 
 > Status: early (v0.7.0). The hub, palette and macros work, with 29 tools: scene
@@ -25,7 +25,7 @@ OpenTools is part of [Open3D](https://github.com/Open3D-Suite/Open3D), a suite o
 
 ## Install
 
-1. The easy way: install the [Open3D Launcher](https://github.com/Open3D-Suite/Open3D/releases/latest)
+1. The easy way: install the [Open3D Launcher](https://github.com/Open3D-Suite/Open3D-Launcher/releases/latest)
    and click **Install** next to OpenTools, with 3ds Max closed. The launcher also tells you when a new
    version is out and updates it. By hand instead: with 3ds Max closed, copy the `OpenTools.bundle` folder
    to `%APPDATA%\Autodesk\ApplicationPlugins\` (create the folder if it does not exist). Either way, if an

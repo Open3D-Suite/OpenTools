@@ -75,7 +75,7 @@ OpenTools is now free software under the GNU GPL v3 or later, and you can instal
 Open3D Launcher. Nothing changes in how the tools work.
 
 - **Install and update OpenTools with the Open3D Launcher.** Download the launcher from
-  [its release page](https://github.com/Open3D-Suite/Open3D/releases/latest), install it and click
+  [its release page](https://github.com/Open3D-Suite/Open3D-Launcher/releases/latest), install it and click
   **Install** next to OpenTools: it puts OpenTools in `ApplicationPlugins` for you and tells you when a new
   version is out. If you copied OpenTools there by hand, the launcher finds it and updates it in place.
   Close 3ds Max before installing or updating.
