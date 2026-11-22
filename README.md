@@ -14,7 +14,7 @@ macros you can bind to hotkeys.
 OpenTools is part of [Open3D](https://github.com/carlesllavata/Open3D), a suite of open-source tools for
 3D work. It was called **Open3DS** until version 0.5.0.
 
-> Status: early (v0.6.0). The hub, palette and macros work, with 29 tools: scene
+> Status: early (v0.7.0). The hub, palette and macros work, with 29 tools: scene
 > checks and repairs (Auditor), relinking and collecting the scene's files (Relink Assets, Collect Assets),
 > proxy and XRef managers, rendering only the render elements you choose (Render Elements, for Corona and
 > V-Ray), modeling and DWG helpers, material copy / paste and a clipboard of objects,

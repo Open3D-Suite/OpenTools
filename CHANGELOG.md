@@ -2,7 +2,7 @@
 
 What each version of OpenTools (formerly Open3DS) adds, newest first.
 
-## In development
+## 0.7.0 — 22 November 2026
 
 - **Your settings and clipboard move to the Open3D folders,** with the other Open3D apps: settings to
   `%APPDATA%\Open3D\OpenTools`, the log, the clipboard slots and the rest to `%LOCALAPPDATA%\Open3D\OpenTools`.
