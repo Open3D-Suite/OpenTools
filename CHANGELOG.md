@@ -9,6 +9,8 @@ What each version of OpenTools (formerly Open3DS) adds, newest first.
 - **Relink Assets:** "Make relative to project", "Make absolute" and "Make UNC (network)" say how many paths
   really changed, and say so when none did, instead of counting every path they were given. "Make UNC" on files
   of a local disk used to say "Updated 3 paths." and changed nothing.
+- **Relink Assets and Collect Assets:** after "Make relative to project", the "Used by" column still shows the
+  objects that use each file instead of "(scene)", and "Selected objects only" still lists their files.
 
 ## 0.7.0 — 22 November 2026
 

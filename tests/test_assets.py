@@ -104,6 +104,30 @@ class AssetHelperTests(unittest.TestCase):
         self.assertEqual(assets.changed_paths([r"C:\Job\Maps\Wood.jpg"], ["c:/job/maps/wood.jpg"]), [])
         self.assertEqual(assets.changed_paths(sent, []), sent)
 
+    def test_owners_of_relative_paths(self):
+        # GetDependencyFileList gives the path 3ds Max resolved; Asset Tracking lists the path as stored
+        bases = (r"C:\job", r"D:\scenes")
+        files = [
+            (r"C:\job\maps\wood.jpg", r"C:\job\maps\wood.jpg"),
+            (r"maps\stone.jpg", r"maps\stone.jpg"),  # relative to the project folder
+            (r"tex\metal.png", r"tex\metal.png"),  # relative, found next to the scene
+            (r"maps\gone.jpg", r"maps\gone.jpg"),  # relative and missing: listed as stored
+            (r"maps\sky.hdr", r"\\nas\lib\sky.hdr"),  # found through the map paths
+            (r"maps\env.hdr", r"maps\env.hdr"),  # used by the environment only
+        ]
+        pairs = [
+            (r"C:\job\maps\wood.jpg", "Box001"),
+            (r"C:\job\maps\stone.jpg", "Wall"),
+            (r"C:\job\maps\stone.jpg", "Box001"),
+            (r"D:\scenes\tex\metal.png", "Rail"),
+            (r"maps\gone.jpg", "Floor"),
+            (r"\\nas\lib\sky.hdr", "Dome"),
+        ]
+        self.assertEqual(
+            assets.match_owners(files, pairs, bases),
+            [["Box001"], ["Box001", "Wall"], ["Rail"], ["Floor"], ["Dome"], []],
+        )
+
     def test_human_size(self):
         self.assertEqual(assets.human_size(512), "512 B")
         self.assertEqual(assets.human_size(2048), "2.0 KB")

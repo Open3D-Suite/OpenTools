@@ -35,6 +35,37 @@ def norm(path):
     return os.path.normcase(os.path.normpath(str(path)))
 
 
+def path_keys(path, bases=()):
+    """The comparable forms (see norm) of a file's path: the path itself and, when it is relative, the path rooted
+    at each folder of `bases`, where 3ds Max looks for it first (the project folder, then the scene's folder)."""
+    path = str(path or "")
+    if not path:
+        return set()
+    keys = {norm(path)}
+    if not os.path.isabs(path):
+        keys.update(norm(os.path.join(str(base), path)) for base in bases if base)
+    return keys
+
+
+def match_owners(files, owner_pairs, bases=()):
+    """The objects that use each file: one sorted list of names per file.
+
+    files: [(path as stored, resolved path)] from Asset Tracking. owner_pairs: [(path, object name)] from
+    ATSOps.GetDependencyFileList, which gives the path where 3ds Max found the file (absolute) and the stored one
+    only when it found none. So a file is matched by its stored path, its resolved path and, when it is relative,
+    the path rooted at `bases`."""
+    owners = {}
+    for dep, name in owner_pairs:
+        owners.setdefault(norm(dep), set()).add(str(name))
+    out = []
+    for path, resolved in files:
+        names = set()
+        for key in path_keys(path, bases) | path_keys(resolved, bases):
+            names |= owners.get(key, set())
+        out.append(sorted(names))
+    return out
+
+
 def changed_paths(sent, after):
     """The paths of `sent` that are no longer in `after`, the scene's file list once they were changed: the ones
     that really changed. A path that only differs in case or separators has not changed."""
@@ -313,21 +344,19 @@ def scan(selected_only=False, include_xrefs=True):
     from pymxs import runtime as rt
 
     files, owner_pairs = rt.execute(_SCAN_MS % {"selected": "true" if selected_only else "false"})
-    owners = {}
-    for pair in owner_pairs:
-        owners.setdefault(norm(pair[0]), []).append(str(pair[1]))
+    files = [(str(e[0]), str(e[1]).lower(), str(e[2])) for e in files]
+    # a relative path is looked for in the project folder first, then in the scene's folder
+    bases = (str(rt.pathConfig.getCurrentProjectFolder() or ""), str(rt.maxFilePath or ""))
+    owners = match_owners([(f[0], f[2]) for f in files], [(str(p[0]), str(p[1])) for p in owner_pairs], bases)
     assets = []
-    for entry in files:
-        path, status, resolved = str(entry[0]), str(entry[1]).lower(), str(entry[2])
-        key = norm(path)
-        node_owners = owners.get(key, [])
+    for (path, status, resolved), node_owners in zip(files, owners, strict=True):
         if selected_only and not node_owners:
             continue
         asset = Asset(
             path=path,
             status="missing" if "missing" in status else "ok",
             resolved=resolved,
-            owners=sorted(set(node_owners)) or [SCENE_OWNER],
+            owners=node_owners or [SCENE_OWNER],
         )
         if not include_xrefs and asset.is_xref:
             continue
