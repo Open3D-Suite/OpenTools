@@ -13,6 +13,13 @@ from opentools import assets, maxhost
 from opentools.ui import assetlist, toolwindow
 from opentools.ui.assetlist import plural
 
+# why "Make relative / absolute / UNC" can leave every path as it was
+UNCHANGED = {
+    "relative": "they are relative already, or on another drive than the project folder.",
+    "absolute": "they are absolute already.",
+    "unc": "none of them is on a mapped network drive.",
+}
+
 
 class ChoiceDialog(QtWidgets.QDialog):
     """Pick a file for every missing file that matched several different files."""
@@ -250,9 +257,14 @@ class RelinkAssetsWindow(assetlist.AssetListWindow):
         if not chosen:
             return
         with maxhost.undo("Resolve Paths"):
-            assets.resolve_paths([a.path for a in chosen], mode)
+            changed = assets.resolve_paths([a.path for a in chosen], mode)
         self.refresh()
-        self.report("Updated %s." % plural(len(chosen), "path"))
+        if not changed:
+            self.report("No path changed: %s" % UNCHANGED[mode])
+        elif changed < len(chosen):
+            self.report("Updated %d of %s." % (changed, plural(len(chosen), "path")))
+        else:
+            self.report("Updated %s." % plural(changed, "path"))
 
 
 def run():

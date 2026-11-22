@@ -35,6 +35,13 @@ def norm(path):
     return os.path.normcase(os.path.normpath(str(path)))
 
 
+def changed_paths(sent, after):
+    """The paths of `sent` that are no longer in `after`, the scene's file list once they were changed: the ones
+    that really changed. A path that only differs in case or separators has not changed."""
+    left = {norm(p) for p in after}
+    return [p for p in sent if norm(p) not in left]
+
+
 def human_size(size):
     if size is None:
         return ""
@@ -384,13 +391,28 @@ def strip_paths(paths):
     return retarget({p: os.path.basename(str(p).replace("/", "\\")) for p in paths})
 
 
+_FILES_MS = r"""
+(
+    local wasExcluded = ATSOps.ExcludeOutputFiles
+    ATSOps.ExcludeOutputFiles = true
+    ATSOps.Refresh()
+    local files = #()
+    ATSOps.GetFiles &files
+    ATSOps.ExcludeOutputFiles = wasExcluded
+    files
+)
+"""
+
+
 def resolve_paths(paths, mode):
-    """mode: 'relative' (to the project folder), 'absolute' or 'unc'."""
+    """mode: 'relative' (to the project folder), 'absolute' or 'unc'. Returns the number of paths that changed:
+    3ds Max leaves alone a path it cannot change (a file of a local disk has no UNC path)."""
     from pymxs import runtime as rt
 
+    paths = [str(p) for p in paths]
     rt.ATSOps.Refresh()
     rt.ATSOps.ClearSelection()
-    rt.ATSOps.SelectFiles(rt.Array(*[str(p) for p in paths]))
+    rt.ATSOps.SelectFiles(rt.Array(*paths))
     action = {
         "relative": rt.ATSOps.ResolveSelectionRelativeToProjectFolder,
         "absolute": rt.ATSOps.ResolveSelectionToAbsolute,
@@ -398,7 +420,8 @@ def resolve_paths(paths, mode):
     }[mode]
     action()
     rt.ATSOps.ClearSelection()
-    rt.ATSOps.Refresh()
+    after = [str(f) for f in rt.execute(_FILES_MS)]  # the same list as scan's, read after a Refresh
+    return len(changed_paths(paths, after))
 
 
 def clear_render_element_paths():

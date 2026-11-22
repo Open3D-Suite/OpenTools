@@ -93,6 +93,17 @@ class AssetHelperTests(unittest.TestCase):
         with zipfile.ZipFile(archive) as z:
             self.assertEqual(sorted(z.namelist()), ["job/maps/a.jpg", "job/scene.max"])
 
+    def test_changed_paths_counts_only_the_paths_that_changed(self):
+        sent = [r"C:\job\maps\wood.jpg", r"C:\job\maps\stone.jpg", r"maps\metal.png"]
+        # "Make UNC" on files of a local disk: the list is the same afterwards
+        self.assertEqual(assets.changed_paths(sent, sent + [r"C:\other\sky.hdr"]), [])
+        # "Make absolute": only the relative path changed
+        after = [r"C:\job\maps\wood.jpg", r"C:\job\maps\stone.jpg", r"C:\job\maps\metal.png"]
+        self.assertEqual(assets.changed_paths(sent, after), [r"maps\metal.png"])
+        # only the case or the separators differ: the same path
+        self.assertEqual(assets.changed_paths([r"C:\Job\Maps\Wood.jpg"], ["c:/job/maps/wood.jpg"]), [])
+        self.assertEqual(assets.changed_paths(sent, []), sent)
+
     def test_human_size(self):
         self.assertEqual(assets.human_size(512), "512 B")
         self.assertEqual(assets.human_size(2048), "2.0 KB")
