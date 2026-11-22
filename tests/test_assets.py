@@ -128,6 +128,33 @@ class AssetHelperTests(unittest.TestCase):
             [["Box001"], ["Box001", "Wall"], ["Rail"], ["Floor"], ["Dome"], []],
         )
 
+    def test_render_outputs_are_not_found_files(self):
+        # Asset Tracking lists the render output and calls it found before a render wrote it
+        texture = write(self.root / "maps" / "wood.jpg", b"wood")
+        beauty = str(self.root / "out" / "shot.exr")  # not written yet
+        element = write(self.root / "out" / "shot_Z.exr", b"z")  # written by an earlier render
+        relative = write(self.root / "out" / "shot_Wire.exr", b"w")
+        entries = [
+            (texture, "#(#ok)", texture),
+            (beauty, "#(#ok)", beauty),
+            (element, "#(#ok)", element),
+            (r"out\shot_Wire.exr", "#(#ok)", r"out\shot_Wire.exr"),
+            (str(self.root / "maps" / "gone.jpg"), "#(#missing)", str(self.root / "maps" / "gone.jpg")),
+        ]
+        outputs = [beauty, element, r"out\shot_Wire.exr"]
+        found = {a.name: a for a in assets.make_assets(entries, [], outputs, bases=(str(self.root),))}
+        self.assertEqual(found["wood.jpg"].status, "ok")
+        self.assertEqual(found["gone.jpg"].status, "missing")
+        for name in ("shot.exr", "shot_Z.exr", "shot_Wire.exr"):
+            self.assertEqual(found[name].status, "output", name)
+        self.assertFalse(found["shot.exr"].written)
+        self.assertIsNone(found["shot.exr"].size)
+        self.assertTrue(found["shot_Z.exr"].written)
+        self.assertEqual(found["shot_Wire.exr"].size, os.path.getsize(relative))
+        # not counted among the missing files, never collected
+        self.assertEqual([a.name for a in found.values() if a.status == "missing"], ["gone.jpg"])
+        self.assertEqual([a.name for a in found.values() if a.status == "ok"], ["wood.jpg"])
+
     def test_human_size(self):
         self.assertEqual(assets.human_size(512), "512 B")
         self.assertEqual(assets.human_size(2048), "2.0 KB")

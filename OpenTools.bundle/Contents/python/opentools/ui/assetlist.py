@@ -14,7 +14,7 @@ from PySide6 import QtCore, QtGui, QtWidgets
 from .. import assets
 from . import common, toolwindow
 
-COLORS = {"missing": "#d9534f", "ok": "#5ba84f", "elsewhere": "#e0a32c"}
+COLORS = {"missing": "#d9534f", "ok": "#5ba84f", "elsewhere": "#e0a32c", "output": "#8c8c8c"}
 ROLE = QtCore.Qt.UserRole + 1
 NOT_SCANNED = "Not scanned yet: press Refresh to list the scene's files."
 
@@ -134,9 +134,14 @@ class AssetListWindow(toolwindow.ToolWindow):
             item.setIcon(0, common.dot_icon(COLORS[state], 12))
             item.setToolTip(
                 0,
-                {"missing": "Missing", "ok": "Found", "elsewhere": "Found through the map paths:\n" + asset.resolved}[
-                    state
-                ],
+                {
+                    "missing": "Missing",
+                    "ok": "Found",
+                    "elsewhere": "Found through the map paths:\n" + asset.resolved,
+                    "output": "Output of the render, "
+                    + ("written by an earlier render." if asset.written else "not written yet.")
+                    + "\nCollect Assets does not copy it, and Relink Assets does not look for it.",
+                }[state],
             )
             item.setText(1, asset.name)
             item.setText(2, asset.folder)
@@ -155,9 +160,16 @@ class AssetListWindow(toolwindow.ToolWindow):
         self.tree.setSortingEnabled(True)
         self._apply_filter()
         missing = sum(1 for a in self.items if a.status == "missing")
-        total = sum(a.size or 0 for a in self.items)
+        outputs = sum(1 for a in self.items if a.status == "output")
+        total = sum(a.size or 0 for a in self.items if a.status != "output")
         self.summary.setText(
-            "%s · %d missing · %s" % (plural(len(self.items), "file"), missing, assets.human_size(total))
+            "%s · %d missing%s · %s"
+            % (
+                plural(len(self.items), "file"),
+                missing,
+                " · %s" % plural(outputs, "render output") if outputs else "",
+                assets.human_size(total),
+            )
         )
 
     def _filter_changed(self, index):

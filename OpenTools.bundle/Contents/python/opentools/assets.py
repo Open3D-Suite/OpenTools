@@ -283,10 +283,11 @@ def zip_folder(folder, zip_path, should_stop=None):
 @dataclass
 class Asset:
     path: str  # as stored in the scene
-    status: str  # "ok" or "missing"
+    status: str  # "ok", "missing" or "output" (a file the render writes, see make_assets)
     resolved: str = ""  # where 3ds Max actually finds it (map paths, etc.)
     owners: list = field(default_factory=list)  # node names, or SCENE_OWNER
     size: int = None
+    written: bool = False  # an output that a render already wrote
 
     @property
     def name(self):
@@ -339,35 +340,83 @@ _SCAN_MS = r"""
 """  # noqa: E501 - a line of MAXScript inside the string is longer
 
 
-def scan(selected_only=False, include_xrefs=True):
-    """Every external file of the scene (or of the selected objects) with its status."""
-    from pymxs import runtime as rt
+def locate(path, resolved="", bases=()):
+    """Where a file is on disk: the first that exists of its resolved path, its path and, when that is relative,
+    the path rooted at each folder of `bases`; "" when none does."""
+    path, resolved = str(path or ""), str(resolved or "")
+    places = [resolved, path]
+    if path and not os.path.isabs(path):
+        places += [os.path.join(str(base), path) for base in bases if base]
+    for place in places:
+        if place and os.path.isabs(place) and os.path.isfile(place):
+            return place
+    return ""
 
-    files, owner_pairs = rt.execute(_SCAN_MS % {"selected": "true" if selected_only else "false"})
-    files = [(str(e[0]), str(e[1]).lower(), str(e[2])) for e in files]
-    # a relative path is looked for in the project folder first, then in the scene's folder
-    bases = (str(rt.pathConfig.getCurrentProjectFolder() or ""), str(rt.maxFilePath or ""))
-    owners = match_owners([(f[0], f[2]) for f in files], [(str(p[0]), str(p[1])) for p in owner_pairs], bases)
+
+def make_assets(entries, owner_pairs, outputs=(), bases=(), selected_only=False, include_xrefs=True):
+    """The Asset of each file Asset Tracking lists. entries: [(path as stored, Asset Tracking's status, resolved
+    path)]; owner_pairs and bases: see match_owners.
+
+    outputs: the files the scene's render writes (see render_outputs). Asset Tracking lists them too and calls them
+    found even before a render wrote them; here their status is "output", so they are neither collected nor counted
+    among the missing files, and `written` says whether a render already wrote them."""
+    files = [(str(e[0]), str(e[1]).lower(), str(e[2])) for e in entries]
+    owners = match_owners([(f[0], f[2]) for f in files], owner_pairs, bases)
+    output_keys = set()
+    for output in outputs:
+        output_keys |= path_keys(output, bases)
     assets = []
     for (path, status, resolved), node_owners in zip(files, owners, strict=True):
         if selected_only and not node_owners:
             continue
-        asset = Asset(
-            path=path,
-            status="missing" if "missing" in status else "ok",
-            resolved=resolved,
-            owners=node_owners or [SCENE_OWNER],
-        )
+        if output_keys & (path_keys(path, bases) | path_keys(resolved, bases)):
+            status = "output"
+        else:
+            status = "missing" if "missing" in status else "ok"
+        asset = Asset(path=path, status=status, resolved=resolved, owners=node_owners or [SCENE_OWNER])
         if not include_xrefs and asset.is_xref:
             continue
-        real = asset.resolved or asset.path
+        if status == "output":
+            real = locate(path, resolved, bases)
+            asset.written = bool(real)
+        else:
+            real = (asset.resolved or asset.path) if status == "ok" else ""
         try:
-            asset.size = os.path.getsize(real) if asset.status == "ok" else None
+            asset.size = os.path.getsize(real) if real else None
         except OSError:
             asset.size = None
         assets.append(asset)
     assets.sort(key=lambda a: (a.status != "missing", a.name.lower()))
     return assets
+
+
+def scan(selected_only=False, include_xrefs=True):
+    """Every external file of the scene (or of the selected objects) with its status."""
+    from pymxs import runtime as rt
+
+    files, owner_pairs = rt.execute(_SCAN_MS % {"selected": "true" if selected_only else "false"})
+    # a relative path is looked for in the project folder first, then in the scene's folder
+    bases = (str(rt.pathConfig.getCurrentProjectFolder() or ""), str(rt.maxFilePath or ""))
+    return make_assets(
+        files,
+        [(str(p[0]), str(p[1])) for p in owner_pairs],
+        outputs=render_outputs(),
+        bases=bases,
+        selected_only=selected_only,
+        include_xrefs=include_xrefs,
+    )
+
+
+def render_outputs():
+    """The files the scene's render writes: the render output and the file of each render element."""
+    from pymxs import runtime as rt
+
+    outputs = [str(rt.rendOutputFilename or "")]
+    manager = rt.maxOps.GetCurRenderElementMgr()
+    if manager is not None:
+        for i in range(manager.NumRenderElements()):
+            outputs.append(str(manager.GetRenderElementFilename(i) or ""))
+    return [p for p in outputs if p]
 
 
 def retarget(mapping):

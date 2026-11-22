@@ -11,6 +11,10 @@ What each version of OpenTools (formerly Open3DS) adds, newest first.
   of a local disk used to say "Updated 3 paths." and changed nothing.
 - **Relink Assets and Collect Assets:** after "Make relative to project", the "Used by" column still shows the
   objects that use each file instead of "(scene)", and "Selected objects only" still lists their files.
+- **Relink Assets and Collect Assets:** the scene's render output and the files of its render elements show as
+  outputs of the render, with a grey dot, and no longer as found files: the render output showed green even
+  before a render wrote it. Collect Assets does not copy them or point them at a copy, and they are not counted
+  among the missing files.
 
 ## 0.7.0 — 22 November 2026
 
