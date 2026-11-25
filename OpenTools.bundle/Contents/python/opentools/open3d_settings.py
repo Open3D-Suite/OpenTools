@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""What every OPEN3D app shares: the language, one preference in settings.json (D-050 to D-058), and
-the folders each app keeps its own files in (D-042 to D-049).
+"""What every OPEN3D app shares: the language, one preference in settings.json, and
+the folders each app keeps its own files in.
 
 This file is a copy. Its original is common/settings/open3d_settings.py in the OPEN3D root, which
 also holds the contract it keeps (common/settings.md): change it there, never here. Standard library
@@ -58,14 +58,14 @@ def data_dir(environ=None):
 
 
 def app_settings_dir(app, environ=None):
-    """The folder of an app's own settings (D-042): `app` in settings_dir, such as
+    """The folder of an app's own settings: `app` in settings_dir, such as
     %APPDATA%\\Open3D\\OpenTools. None when there is no settings_dir."""
     folder = settings_dir(environ)
     return folder / app if folder is not None else None
 
 
 def app_data_dir(app, environ=None):
-    """The folder of everything else an app writes (D-044): `app` in data_dir, such as
+    """The folder of everything else an app writes: `app` in data_dir, such as
     %LOCALAPPDATA%\\Open3D\\OpenTools. None when there is no data_dir."""
     folder = data_dir(environ)
     return folder / app if folder is not None else None
@@ -95,8 +95,8 @@ class CarryOver:
 
 
 def carry_over(old, new):
-    """Copies an app's old folder into its new one, the first time it starts with the new folders
-    (D-048, D-049). Only when nothing has the name `new` and `old` is a folder: everything in `old` is
+    """Copies an app's old folder into its new one, the first time it starts with the new folders.
+    Only when nothing has the name `new` and `old` is a folder: everything in `old` is
     copied into a new folder beside `new`, which takes the name `new` once the copy is complete, so a
     copy cut half way is never taken for a finished one. An existing `new` is never touched, and `old`
     is never changed, moved or deleted. Links inside `old` are not followed. A file that cannot be read
@@ -334,7 +334,7 @@ def with_language(old, language):
 
 
 def windows_language():
-    """The language of Windows (D-052): Spanish when the user's interface language is Spanish, of
+    """The language of Windows: Spanish when the user's interface language is Spanish, of
     any country; otherwise English."""
     return language_for_windows(_user_interface_language())
 
